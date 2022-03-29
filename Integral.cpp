@@ -1,6 +1,6 @@
 #pragma once
 #include"Integral.h"
-
+#include "Mathfunctions.h"
 
 Integ::Integ() :_a(0.0), _b(0.0) {
 	_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
@@ -51,79 +51,6 @@ istream& operator >>(istream& stream, Integ& ob1) {
 #pragma intrinsic(tanh)
 #pragma intrinsic(pow)*/
 
-const static T tmpEd = 1;
-
-inline T myLog(const T x) {
-	return log(x);
-}
-
-inline T myLog10(const T x) {
-	return log10(x);
-}
-
-inline T myCot(const T x) {
-	return tmpEd / tan(x);
-}
-
-inline T myAcot(const T x) {
-	return tmpEd / atan(x);
-}
-
-inline T mySin(const T x) {
-	return sin(x);
-}
-
-inline T myCos(const T x) {
-	return cos(x);
-}
-
-inline T myTan(const T x) {
-	return tan(x);
-}
-
-inline T myAcos(const T x) {
-	return acos(x);
-}
-
-inline T myAsin(const T x) {
-	return asin(x);
-}
-
-inline T myAtan(const T x) {
-	return atan(x);
-}
-
-inline T myExp(const T x) {
-	return exp(x);
-}
-
-inline T myConst(const T x) {
-	return x;
-}
-
-inline T myTanh(const T x) {
-	return tanh(x);
-}
-
-inline T myAdd(const T num, const T x) {
-	return num + x;
-}
-
-inline T mySub(const T num, const T x) {
-	return num - x;
-}
-
-inline T myDiv(const T num, const T x) {
-	return num / x;
-}
-
-inline T myMul(const T num, const T x) {
-	return num * x;
-}
-
-inline T myPow(const T x, const T num) {
-	return pow(x, num.real());
-}
 
 T i;
 T E;
@@ -239,6 +166,7 @@ T Integ::Result() {
 	char* strFunc = strdup(_func); // продублировали строку
 	const char separators[] = "()"; // массив разделителей
 	char* token = strtok(strFunc, separators); // откусили название операции
+	bool complexResult = false;
 
 	int j;
 	for (j = 0; j < _countof(functions); j++)
@@ -255,18 +183,25 @@ T Integ::Result() {
 	T value;
 	token = strtok(NULL, separators); // откусили аргумент функции
 	ofstream outFile;
-	outFile.open("graphP", ios::trunc);
-	outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" with boxes" << endl;
-	outFile.close();
+	// заполняем файл с данными для GNUPlot
 	outFile.open("graph", ios::trunc);
 	while (i.real() < n.real())
 	{
 		value = functions[j].pfUnaryOperation(ParseExpr(token));
 		Square += E * value;
+		if(value.imag()!=0)
+			complexResult = true;
 		if((int)i.real() % 1000 == 0)
-			outFile << (E*i + _a).real() << " " << value.real() << endl;
+			outFile << (E*i + _a).real() << " " << value.real() << " " << value.imag() << endl;
 		i += T(1, 0);
 	}
+	outFile.close();
+	// заполняем файл с командами для GNUPlot
+	outFile.open("graphP", ios::trunc);
+	if(complexResult)
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with boxes" << endl << "pause -1" << endl;
+	else
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" with boxes" << endl << "pause -1" << endl;
 	outFile.close();
 	return Square;
 };

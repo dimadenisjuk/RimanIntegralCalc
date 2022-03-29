@@ -6,7 +6,7 @@ int main() {
 	cout << "# Введите интегрируемую функцию, начало и конец отрезка  " << endl;
 	cin >> ob1;
 	T res = fun(ob1);
-	system("gnuplot --persist graphP");
 	cout << "# Значение интеграла (площадь под фигурой) : " << res << endl;
+	system("gnuplot graphP");
 	return 0;
 }
