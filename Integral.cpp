@@ -191,11 +191,11 @@ T Integ::Result() {
 		Square += E * value;
 		if(value.imag()!=0)
 			complexResult = true;
-		if((int)i.real() % 1000 == 0)
+		if((int)i.real() % 500 == 0)
 			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
 		i += T(1, 0);
-		if((int)(100 * i.real() / n.real()) % 10 == 0)
-			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()) % 10 == 0);
+		if((int)(100 * i.real() / n.real()) % 5 == 0)
+			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()));
 	}
 	outFile.close();
 	// заполняем файл с командами для GNUPlot
