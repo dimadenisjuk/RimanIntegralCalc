@@ -192,16 +192,18 @@ T Integ::Result() {
 		if(value.imag()!=0)
 			complexResult = true;
 		if((int)i.real() % 1000 == 0)
-			outFile << (E*i + _a).real() << " " << value.real() << " " << value.imag() << endl;
+			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
 		i += T(1, 0);
+		if((int)(100 * i.real() / n.real()) % 10 == 0)
+			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()) % 10 == 0);
 	}
 	outFile.close();
 	// заполняем файл с командами для GNUPlot
 	outFile.open("graphP", ios::trunc);
 	if(complexResult)
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with boxes" << endl << "pause -1" << endl;
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with impulses" << endl;
 	else
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" with boxes" << endl << "pause -1" << endl;
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
 	outFile.close();
 	return Square;
 };
