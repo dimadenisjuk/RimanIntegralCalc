@@ -22,6 +22,8 @@ class Integ {
 	T _a;
 	T _b;
 	char * _func;
+	T i;
+	T E;
 public:
 	Integ();
 	Integ(T, T);
@@ -36,7 +38,10 @@ public:
 	friend ostream& operator <<(ostream& stream, const Integ& ob1);
 	friend istream& operator >>(istream& stream, Integ& ob2);
 
-	T Result();
+	T ResultOld();
+	T ParseExprOld(const char*);
+
+	T ResultNew();
 };
 /*
 class MyException {

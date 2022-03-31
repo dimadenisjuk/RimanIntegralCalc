@@ -52,9 +52,6 @@ istream& operator >>(istream& stream, Integ& ob1) {
 #pragma intrinsic(pow)*/
 
 
-T i;
-T E;
-T _a2;
 
 inline void ECfree(char* pointer) {
 	if (pointer != nullptr)
@@ -63,7 +60,7 @@ inline void ECfree(char* pointer) {
 
 // разбираем строку формата:  функция(коэффицент*x+константа) -- нового образца
 
-T ParseExpr(const char* expr) {
+T Integ::ParseExprOld(const char* expr) {
 	const static char* sep1 = "+-";
 	const static char* sep2 = "*/";
 	const static char* sep3 = "^";
@@ -120,7 +117,7 @@ stage4:
 	ECfree(expr2);
 
 	if (expr[0] == 'x')
-		return E * i + _a2;
+		return E * i + _a;
 	return atof(expr);
 
 doOperation:
@@ -130,14 +127,48 @@ doOperation:
 	strcpy(rightS, right);
 
 	ECfree(expr2);
-	return op(ParseExpr(leftS), ParseExpr(rightS));
+	return op(ParseExprOld(leftS), ParseExprOld(rightS));
 }
 
+T Integ::ResultNew() {
+	T absS;
+	absS = abs(_b - _a);
+	T Square(0, 0);
+	i = 1;
+	T n = 10000003;
+	E = absS / n;
+	
+	T value;
+	bool complexResult = false;
+	ofstream outFile;
+	// заполняем файл с данными для GNUPlot
+	outFile.open("graph", ios::trunc);
+	while (i.real() < n.real())
+	{
+		//value = functions[j].pfUnaryOperation(ParseExprOld(token));
+		Square += E * value;
+		if(value.imag()!=0)
+			complexResult = true;
+		if((int)i.real() % 500 == 0)
+			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
+		i += T(1, 0);
+		if((int)(100 * i.real() / n.real()) % 5 == 0)
+			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()));
+	}
+	outFile.close();
+	// заполняем файл с командами для GNUPlot
+	outFile.open("graphP", ios::trunc);
+	if(complexResult)
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with impulses" << endl;
+	else
+		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
+	outFile.close();
+	return Square;
+}
 
 // разбираем строку формата:  функция(коэффицент*x+константа)
-T Integ::Result() {
+T Integ::ResultOld() {
 	T absS;
-	_a2 = _a;
 	absS = abs(_b - _a);
 	T Square(0, 0);
 	i = 1;
@@ -187,7 +218,7 @@ T Integ::Result() {
 	outFile.open("graph", ios::trunc);
 	while (i.real() < n.real())
 	{
-		value = functions[j].pfUnaryOperation(ParseExpr(token));
+		value = functions[j].pfUnaryOperation(ParseExprOld(token));
 		Square += E * value;
 		if(value.imag()!=0)
 			complexResult = true;
@@ -210,5 +241,5 @@ T Integ::Result() {
 
 T fun(Integ& ob1)
 {
-	return ob1.Result();
+	return ob1.ResultOld();
 }
