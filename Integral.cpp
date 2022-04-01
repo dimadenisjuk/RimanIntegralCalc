@@ -20,6 +20,9 @@ void Integ::Seta(T a) {
 void Integ::Setb(T b) {
 	_b = b;
 }
+void Integ::SetFunc(const char* func) {
+	strcpy(_func, func);
+}
 
 T Integ::Geta() {
 	return _a;

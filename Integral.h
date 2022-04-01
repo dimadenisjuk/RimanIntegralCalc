@@ -31,6 +31,7 @@ public:
 
 	void Seta(T);
 	void Setb(T);
+	void SetFunc(const char*);
 
 	T Geta();
 	T Getb();
