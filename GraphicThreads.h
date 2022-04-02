@@ -14,4 +14,16 @@ class ThreadCalc : public QThread
 		Window* window;
 };
 
+
+class ThreadGNUPlot : public QThread
+{
+	Q_OBJECT
+	public:
+		explicit ThreadGNUPlot(QString threadName, Window* window);
+		void run();
+	private:
+		QString name; // name of the thread
+		Window* window;
+};
+
 #endif // GRAPHICTHREADS_H

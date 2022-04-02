@@ -1,11 +1,13 @@
 #ifndef GRAPHICWIN_H
 #define GRAPHICWIN_H
 
+#include "Definitions.h"
+#include "Integral.h"
 #include <QtGui>
 #include <QtWidgets>
-#include <Integral.h>
 
 class QTextEdit;
+class QLineEdit;
 class QCheckBox;
 class QPushButton;
 class QProgressBar;
@@ -16,10 +18,12 @@ class Window : public QWidget {
 		explicit Window(QWidget *parent = 0);
 	private:
 		QPushButton* m_buttonCalc;
+		QProgressBar* progressBar;
 	public: // temporary?
 		QTextEdit* m_integralInput;
 		QLineEdit* m_downBoundInput;
 		QLineEdit* m_upBoundInput;
+		int progress;
 	private:
 		T _a, _b;
 		char* _func;
@@ -30,6 +34,8 @@ class Window : public QWidget {
 		//void integralChanged(int);
 		//void aChanged(int);
 		//void bChanged(int);
+	public slots:
+		void slotChangeProgress();
 	signals:
 		void signalCalculated(T value);
 };

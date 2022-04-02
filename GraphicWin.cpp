@@ -2,7 +2,8 @@
 #include "GraphicThreads.h"
 
 Window::Window(QWidget* parent) :
-	QWidget(parent)
+	QWidget(parent),
+	progress(0)
 	{
 		setFixedSize(200, 200);
 
@@ -26,7 +27,12 @@ Window::Window(QWidget* parent) :
 		QPushButton* buttonExit = new QPushButton("Exit", this);
 		buttonExit->setToolTip("Quit from application");
 		buttonExit->setGeometry(50, 150, 130, 30);
-		
+	
+		progressBar = new QProgressBar(this);
+		progressBar->setRange(0, 100);
+		progressBar->setValue(progress);
+		progressBar->setGeometry(10, 180, 180, 10);
+
 
 		// binding calculating the integral
 		connect(m_buttonCalc, SIGNAL(clicked(bool)), this, SLOT(slotButtonClicked(bool)));
@@ -34,14 +40,21 @@ Window::Window(QWidget* parent) :
 
 		// binding exit from application
 		connect(buttonExit, SIGNAL(clicked()), QApplication::instance(), SLOT(quit()));
-		
+
 		// binding end of calculating the integral
 		connect(this, SIGNAL(signalCalculated(T)), this, SLOT(slotCalculated(T)));
+		QTimer* timer = new QTimer;
+    		timer->start(100); //каждую 1/10 секунды
+    		connect(timer, SIGNAL(timeout()), this, SLOT(slotChangeProgress()));
 	}
 
-void Window::slotStartCalculate() {
+void Window::slotStartCalculate() { // костыль!!!
 	ThreadCalc*  threadCalc = new ThreadCalc("threadCalc", this);
 	threadCalc->start();
+}
+
+void Window::slotChangeProgress() {
+	progressBar->setValue(progress);
 }
 
 void Window::slotButtonClicked(bool checked) {
@@ -59,4 +72,6 @@ void Window::slotCalculated(T value) {
 	QString str;
 	str = QString::fromStdString("(" + to_string(value.real()) + " ; " + to_string(value.imag()) + ")");
 	m_buttonCalc->setText(str);
+	ThreadGNUPlot* threadGNUPlot = new ThreadGNUPlot("threadGNUPlot", this);
+	threadGNUPlot->start();
 }

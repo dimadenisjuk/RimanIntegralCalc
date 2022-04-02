@@ -9,7 +9,6 @@ ThreadCalc::ThreadCalc(QString threadName, Window* win) :
 
 void ThreadCalc::run()
 {
-	cout << "ALIVE" << endl;
 	QString string = window->m_integralInput->toPlainText();
 	char* string2 = new char[string.size() + 1];
 	memset(string2, 0, string.size() + 1);
@@ -18,7 +17,20 @@ void ThreadCalc::run()
 	ob1.SetFunc(string2);
 	ob1.Seta(window->m_downBoundInput->text().toInt());
 	ob1.Setb(window->m_upBoundInput->text().toInt());
-	T res = ob1.ResultOld();
+	T res = fun(ob1, &window->progress);
 	emit window->signalCalculated(res);
 	
+}
+
+
+ThreadGNUPlot::ThreadGNUPlot(QString threadName, Window* win) :
+	name(threadName),
+	window(win)
+{
+
+}
+
+void ThreadGNUPlot::run()
+{
+	system(GNUPLOT);
 }
