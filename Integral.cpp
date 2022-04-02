@@ -1,4 +1,3 @@
-#pragma once
 #include"Integral.h"
 #include "Mathfunctions.h"
 
@@ -170,7 +169,7 @@ T Integ::ResultNew() {
 }
 
 // разбираем строку формата:  функция(коэффицент*x+константа)
-T Integ::ResultOld() {
+T Integ::ResultOld(int* progress) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
@@ -229,7 +228,10 @@ T Integ::ResultOld() {
 			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
 		i += T(1, 0);
 		if((int)(100 * i.real() / n.real()) % 5 == 0)
+		{
 			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()));
+			*progress = (int)(100 * i.real() / n.real());
+		}
 	}
 	outFile.close();
 	// заполняем файл с командами для GNUPlot
@@ -242,7 +244,7 @@ T Integ::ResultOld() {
 	return Square;
 };
 
-T fun(Integ& ob1)
+T fun(Integ& ob1, int* progress)
 {
-	return ob1.ResultOld();
+	return ob1.ResultOld(progress);
 }

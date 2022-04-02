@@ -39,7 +39,7 @@ public:
 	friend ostream& operator <<(ostream& stream, const Integ& ob1);
 	friend istream& operator >>(istream& stream, Integ& ob2);
 
-	T ResultOld();
+	T ResultOld(int* progress); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
 	T ParseExprOld(const char*);
 
 	T ResultNew();
@@ -54,4 +54,4 @@ public:
 	void printMessage();
 };*/
 
-T fun(Integ& ob1);
+T fun(Integ& ob1, int* progress);
