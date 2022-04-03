@@ -51,6 +51,11 @@ Token Scanner::CreateToken(const char* ptr, int count, Token::EType type) {
 Token Scanner::GetToken() {
 	switch(*pCurrent)
 	{
+		// Прокуск пробелов
+		case ' ':
+		case '\t':
+			pCurrent++;
+			continue;
 		case '+':
 			return CreateToken(pCurrent++, 1, Token::Addition);
 		case '-':
@@ -95,16 +100,17 @@ Token Scanner::GetToken() {
 				return CreateToken(pCurrent-3, 3, Token::Function);
 			return CreateToken("", 0, Token::Empty);
 	}
-#define MAX_NUM_LENGTH 40
 	if(isdigit(*pCurrent)) {
 		char buffNum[MAX_NUM_LENGTH];
 		unsigned i;
+		bool dotUsed = false, eUsed = false;
 		for(i = 0; i < MAX_NUM_LENGTH; ++i, ++pCurrent)
 		{
 			if(!isdigit(*pCurrent))
 			{
-				if(*pCurrent == 'e' || *pCurrent == 'E')
+				if((*pCurrent == 'e' || *pCurrent == 'E') && !eUsed) // для чисел вида 1.341E+12
 				{
+					eUsed = true;
 					buffNum[i] = *pCurrent;
 					++i, ++pCurrent;
 					if(*pCurrent == '+' || *pCurrent == '-')
@@ -112,9 +118,12 @@ Token Scanner::GetToken() {
 						buffNum[i] = *pCurrent;
 						continue;
 					}
+					--i, --pCurrent;
+					continue;
 				}
-				else if(*pCurrent == '.')
+				else if(*pCurrent == '.' && !dotUsed && !eUsed)
 				{
+					dotUsed = true;
 					buffNum[i] = *pCurrent;
 					continue;
 				}
@@ -127,7 +136,7 @@ Token Scanner::GetToken() {
 }
 
 int main() {
-	const char* str = "(x+2)*sin(x^22.1)";
+	const char* str = "(x+2)*sin(x^22.1E-1)";
 	Scanner scn(str);
 	while(true)
 		scn.GetToken().Print();

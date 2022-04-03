@@ -1,5 +1,8 @@
 #ifndef PARSERNEW_H
 #define PARSERNEW_H
+
+#define MAX_NUM_LENGTH 40
+
 #include "Stack.h"
 #include <string.h>
 #include <assert.h>
@@ -45,10 +48,26 @@ public:
 };
 
 class Node {
-
+public:
+	enum EType {
+		Expression,
+		Additive,
+		Multiplicative,
+		Power,
+		Primary
+	} type;
+	struct {
+		struct {
+			Node *pLeft, *pRight; // Дочерние узлы
+		};
+		Token token; // Операция над ними
+	} data;
+	Node(EType type);
 };
 
-class Parser {
+class Parser : Scanner {
+	Stack <Node*> nodes;
+	Token token;
 	
 };
 
