@@ -11,7 +11,10 @@ void Token::Print() {
 	else if(type > OperationMin && type < OperationMax)
 		printf("Operation: %s\n", value);
 	else
+	{
+		printf("[err]: Non printable: %s\n", value);
 		assert(false);
+	}
 }
 
 bool Token::IsOperation(int count, ...) {
@@ -45,5 +48,33 @@ Token Scanner::CreateToken(const char* ptr, int count, Token::EType type) {
 }
 
 Token Scanner::GetToken() {
-	return CreateToken("", 0, Token::Empty);
+	switch(*pCurrent)
+	{
+		case '+':
+			return CreateToken(pCurrent++, 1, Token::Addition);
+		case '-':
+			return CreateToken(pCurrent++, 1, Token::Subtraction);
+		case '*':
+			return CreateToken(pCurrent++, 1, Token::Multiplication);
+		case '/':
+			return CreateToken(pCurrent++, 1, Token::Division);
+		case '^':
+			return CreateToken(pCurrent++, 1, Token::Power);
+		case '(':
+			return CreateToken(pCurrent++, 1, Token::Left);
+		case ')':
+			return CreateToken(pCurrent++, 1, Token::Right);
+		case 'x':
+			return CreateToken(pCurrent++, 1, Token::Variable);
+		default:
+			return CreateToken("", 0, Token::Empty);
+	}
+}
+
+int main() {
+	const char* str = "(x+x)*x";
+	Scanner scn(str);
+	while(true)
+		scn.GetToken().Print();
+	return 0;
 }

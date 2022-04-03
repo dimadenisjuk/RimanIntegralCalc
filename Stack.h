@@ -2,6 +2,7 @@
 #define STACK_H
 #pragma once
 #include <assert.h>
+#include <stdlib.h>
 
 template <typename T1_s>
 class Stack {
