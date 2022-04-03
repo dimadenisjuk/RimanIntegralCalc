@@ -1,4 +1,5 @@
 #include "ParserNew.h"
+#include <ctype.h>
 
 Token::Token() {
 	type = Unknown;
@@ -66,13 +67,67 @@ Token Scanner::GetToken() {
 			return CreateToken(pCurrent++, 1, Token::Right);
 		case 'x':
 			return CreateToken(pCurrent++, 1, Token::Variable);
-		default:
+		case 'c': // may be 'cos'
+			++pCurrent;
+			if(*(pCurrent++) == 'o')
+				if(*(pCurrent++) == 's')
+					return CreateToken(pCurrent-3, 3, Token::Function);
+			return CreateToken("", 0, Token::Empty);
+		case 'p': //may be 'pi'
+			++pCurrent;
+			if(*(pCurrent++) == 'i')
+				return CreateToken(pCurrent-2, 2, Token::Constant);
+			return CreateToken("", 0, Token::Empty);
+		case 's': // may be 'sin'
+			++pCurrent;
+			if(*(pCurrent++) == 'i')
+				if(*(pCurrent++) == 'n')
+					return CreateToken(pCurrent-3, 3, Token::Function);
+			return CreateToken("", 0, Token::Empty);
+		case 't': // may be 'tan' or 'tg'
+			++pCurrent;
+			if(*(pCurrent++) == 'a')
+			{
+				if(*(pCurrent++) == 'n')
+					return CreateToken(pCurrent-3, 3, Token::Function);
+			}
+			else if(*(pCurrent-1) == 'g')
+				return CreateToken(pCurrent-3, 3, Token::Function);
 			return CreateToken("", 0, Token::Empty);
 	}
+#define MAX_NUM_LENGTH 40
+	if(isdigit(*pCurrent)) {
+		char buffNum[MAX_NUM_LENGTH];
+		unsigned i;
+		for(i = 0; i < MAX_NUM_LENGTH; ++i, ++pCurrent)
+		{
+			if(!isdigit(*pCurrent))
+			{
+				if(*pCurrent == 'e' || *pCurrent == 'E')
+				{
+					buffNum[i] = *pCurrent;
+					++i, ++pCurrent;
+					if(*pCurrent == '+' || *pCurrent == '-')
+					{
+						buffNum[i] = *pCurrent;
+						continue;
+					}
+				}
+				else if(*pCurrent == '.')
+				{
+					buffNum[i] = *pCurrent;
+					continue;
+				}
+			return CreateToken(buffNum, i, Token::Number);
+			}
+			buffNum[i] = *pCurrent;
+		}
+	}
+	return CreateToken("", 0, Token::Empty);
 }
 
 int main() {
-	const char* str = "(x+x)*x";
+	const char* str = "(x+2)*sin(x^22.1)";
 	Scanner scn(str);
 	while(true)
 		scn.GetToken().Print();
