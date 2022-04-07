@@ -145,6 +145,7 @@ T Integ::ResultNew() {
 	ofstream outFile;
 	// заполняем файл с данными для GNUPlot
 	outFile.open("graph", ios::trunc);
+	double progressExact = 0;
 	while (i.real() < n.real())
 	{
 		//value = functions[j].pfUnaryOperation(ParseExprOld(token));
@@ -154,8 +155,11 @@ T Integ::ResultNew() {
 		if((int)i.real() % 500 == 0)
 			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
 		i += T(1, 0);
-		if((int)(100 * i.real() / n.real()) % 5 == 0)
-			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()));
+		progressExact = 100 * i.real() / (n.real() - 3);
+		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
+		{
+			printf("\rCalculating: %d%%", (int)progressExact);
+		}
 	}
 	outFile.close();
 	// заполняем файл с командами для GNUPlot
@@ -218,6 +222,7 @@ T Integ::ResultOld(int* progress) {
 	ofstream outFile;
 	// заполняем файл с данными для GNUPlot
 	outFile.open("graph", ios::trunc);
+	double progressExact = 0;
 	while (i.real() < n.real())
 	{
 		value = functions[j].pfUnaryOperation(ParseExprOld(token));
@@ -227,10 +232,11 @@ T Integ::ResultOld(int* progress) {
 		if((int)i.real() % 500 == 0)
 			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
 		i += T(1, 0);
-		if((int)(100 * i.real() / n.real()) % 5 == 0)
+		progressExact = 100 * i.real() / (n.real() - 3);
+		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
-			printf("\rCalculating: %d%%", (int)(100 * i.real() / n.real()));
-			*progress = (int)(100 * i.real() / n.real());
+			printf("\rCalculating: %d%%", (int)progressExact);
+			*progress = (int)(progressExact);
 		}
 	}
 	outFile.close();
