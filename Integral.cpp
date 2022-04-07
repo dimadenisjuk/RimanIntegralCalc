@@ -235,7 +235,8 @@ T Integ::ResultOld(int* progress) {
 		progressExact = 100 * i.real() / (n.real() - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
-			printf("\rCalculating: %d%%", (int)progressExact);
+			cout << "\rCalculating: " << (int)progressExact << "%";
+			cout.flush(); // мгновенная печать потока cout
 			*progress = (int)(progressExact);
 		}
 	}
