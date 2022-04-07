@@ -51,24 +51,27 @@ class Node {
 public:
 	enum EType {
 		Expression,
-		Additive,
-		Multiplicative,
-		Power,
-		Primary
+		Additive, // Выражение вида "a (+|-) b"
+		Multiplicative, // Выражение вида "a (*|/) b"
+		Power, // Выражение вида "a ^ b"
+		Unary, // Унарное выражение вида "sin a"
+		Primary // Конечное выражение вида "a"
 	} type;
-	struct {
-		struct {
-			Node *pLeft, *pRight; // Дочерние узлы
-		};
-		Token token; // Операция над ними
-	} data;
+	Node *pLeft, *pRight; // Дочерние узлы
+	Token token; // Операция над ними
 	Node(EType type);
 };
 
 class Parser : Scanner {
 	Stack <Node*> nodes;
 	Token token;
-	
+	Node* ParseAdditive();
+	Node* ParseMultiplicative();
+	Node* ParsePower();
+	Node* ParsePrimary();
+	public:
+	Parser(const char* source);
+	Node* Parse();
 };
 
 #endif //PARSERNEW_H
