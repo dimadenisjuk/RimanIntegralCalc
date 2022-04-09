@@ -132,15 +132,20 @@ doOperation:
 	return op(ParseExprOld(leftS), ParseExprOld(rightS));
 }
 
-T Integ::ResultNew() {
+T Integ::ResultNew(int* progress, int presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
 	i = 1;
-	T n = 10000003;
+	T n = presition + 3;
 	E = absS / n;
 	
 	T value;
+	
+	const char* str = "(x+2)*sin(x^22.1E-1)";
+	Parser prs1(_func);
+	Node* root = prs1.Parse(); //Получаем корневой узел дерева вычислений
+	
 	bool complexResult = false;
 	ofstream outFile;
 	// заполняем файл с данными для GNUPlot
@@ -148,7 +153,7 @@ T Integ::ResultNew() {
 	double progressExact = 0;
 	while (i.real() < n.real())
 	{
-		//value = functions[j].pfUnaryOperation(ParseExprOld(token));
+		value = Calculate(root, E*i + _a);
 		Square += E * value;
 		if(value.imag()!=0)
 			complexResult = true;
@@ -159,6 +164,8 @@ T Integ::ResultNew() {
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
 			printf("\rCalculating: %d%%", (int)progressExact);
+			cout.flush(); // мгновенная печать потока cout
+			*progress = (int)(progressExact);
 		}
 	}
 	outFile.close();
@@ -173,12 +180,12 @@ T Integ::ResultNew() {
 }
 
 // разбираем строку формата:  функция(коэффицент*x+константа)
-T Integ::ResultOld(int* progress) {
+T Integ::ResultOld(int* progress, int presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
 	i = 1;
-	T n = 10000003;
+	T n = presition + 3;
 	E = absS / n;
 
 	const static struct {
@@ -251,7 +258,9 @@ T Integ::ResultOld(int* progress) {
 	return Square;
 };
 
-T fun(Integ& ob1, int* progress)
+T fun(Integ& ob1, int* progress, int parserVersion, int presition)
 {
-	return ob1.ResultOld(progress);
+	if(!parserVersion)
+		return ob1.ResultOld(progress, presition);
+	return ob1.ResultNew(progress, presition);
 }

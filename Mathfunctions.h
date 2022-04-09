@@ -1,3 +1,6 @@
+#ifndef MATHFUNCTIONS_H
+#define MATHFUNCTIONS_H
+
 #include <math.h>
 #include "Definitions.h"
 
@@ -76,3 +79,5 @@ inline T myPow(const T x, const T num) {
 //		return pow(x.real(), num.real()); // pow(double, double)
 	return pow(x, num.real()); // pow(complex<double>, double)
 }
+
+#endif //MATHFUNCTIONS_H

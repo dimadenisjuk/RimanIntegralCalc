@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 	cout << "# Введите интегрируемую функцию, начало и конец отрезка  " << endl;
 	cin >> ob1;
 	int progress = 0;
-	T res = fun(ob1, &progress);
+	T res = fun(ob1, &progress, PARSER_NEW, PRESITION_M);
 	cout << "# Значение интеграла (площадь под фигурой): " << res << endl;
 	cout << "# Введите \"quit\" для выхода из GNUPlot" << endl;
 	system(GNUPLOT);

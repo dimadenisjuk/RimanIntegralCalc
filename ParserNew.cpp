@@ -1,6 +1,5 @@
 #include "ParserNew.h"
 #include <ctype.h>
-#include "Mathfunctions.h"
 
 
 Token::Token() {
@@ -239,7 +238,6 @@ Node* Parser::ParsePrimary() {
 		pPrim->pLeft = pLeft;
 		pPrim->pRight = nullptr;
 		nodes.Push(pPrim);
-		token = GetToken();
 		return pPrim;
 	}
 	return ParseAdditive();
@@ -292,6 +290,30 @@ T Calculate(Node* node, T firstVar) {
 	{
 		if(!strcmp(node->token.value, "sin"))
 			return mySin(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "cos"))
+			return myCos(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "tan"))
+			return myTan(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "tg"))
+			return myTan(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "acos"))
+			return myAcos(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "asin"))
+			return myAsin(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "atan"))
+			return myAtan(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "exp"))
+			return myAtan(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "tanh"))
+			return myTanh(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "log"))
+			return myLog(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "log10"))
+			return myLog10(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "cot"))
+			return myCot(Calculate(node->pLeft, firstVar));
+		if(!strcmp(node->token.value, "acot"))
+			return myAcot(Calculate(node->pLeft, firstVar));
 		printf("[err]: Not implemented: %s\n", node->token.value);
 		assert(false); // Не реализовано
 	}

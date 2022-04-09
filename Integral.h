@@ -7,6 +7,7 @@
 #include <cstring>
 #include <fstream>
 #include "Definitions.h"
+#include "ParserNew.h"
 
 //#include<complex.h>
 using namespace std;
@@ -38,10 +39,10 @@ public:
 	friend ostream& operator <<(ostream& stream, const Integ& ob1);
 	friend istream& operator >>(istream& stream, Integ& ob2);
 
-	T ResultOld(int* progress); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
+	T ResultOld(int* progress, int prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
 	T ParseExprOld(const char*);
 
-	T ResultNew();
+	T ResultNew(int* progress, int presition);
 };
 /*
 class MyException {
@@ -53,4 +54,4 @@ public:
 	void printMessage();
 };*/
 
-T fun(Integ& ob1, int* progress);
+T fun(Integ& ob1, int* progress, int parserVersion=1, int presition=PRESITION_M);

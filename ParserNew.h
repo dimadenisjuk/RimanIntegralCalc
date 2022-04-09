@@ -4,6 +4,7 @@
 #define MAX_NUM_LENGTH 40
 
 #include "Stack.h"
+#include "Mathfunctions.h"
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
@@ -74,5 +75,7 @@ class Parser : Scanner {
 	Parser(const char* source);
 	Node* Parse();
 };
+
+T Calculate(Node* node, T firstVar); // Подсчёт значения выражения
 
 #endif //PARSERNEW_H

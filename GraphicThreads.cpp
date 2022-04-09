@@ -17,7 +17,7 @@ void ThreadCalc::run()
 	ob1.SetFunc(string2);
 	ob1.Seta(window->m_downBoundInput->text().toInt());
 	ob1.Setb(window->m_upBoundInput->text().toInt());
-	T res = fun(ob1, &window->progress);
+	T res = fun(ob1, &window->progress, PARSER_NEW, PRESITION_M);
 	emit window->signalCalculated(res);
 	
 }
