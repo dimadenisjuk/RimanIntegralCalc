@@ -5,38 +5,54 @@ Window::Window(QWidget* parent) :
 	QWidget(parent),
 	progress(0)
 	{
-		setFixedSize(200, 200);
-
-		m_integralInput = new QLineEdit(this);
+		setFixedSize(200, 250);
+		QVBoxLayout* layoutMain = new QVBoxLayout(this);
+		layoutMain->setDirection(QBoxLayout::TopToBottom);
+		m_integralInput = new QLineEdit();
 		m_integralInput->setPlaceholderText("Input integral");
-		m_downBoundInput = new QLineEdit(this);
+		layoutMain->addWidget(m_integralInput);
+
+		m_downBoundInput = new QLineEdit();
 		m_downBoundInput->setPlaceholderText("a");
-		m_upBoundInput = new QLineEdit(this);
+		m_upBoundInput = new QLineEdit();
 		m_upBoundInput->setPlaceholderText("b");
-		m_integralInput->setGeometry(10, 10, 180, 20);
-		m_downBoundInput->setGeometry(30, 40, 50, 20);
-		m_upBoundInput->setGeometry(90, 40, 50, 20);
 
-		QCheckBox* parserSelectCheckBox = new QCheckBox("Use new parser", this);
-		parserSelectCheckBox->setGeometry(50, 70, 130, 30);
+		QVBoxLayout* layoutAB = new QVBoxLayout();
+		layoutAB->setDirection(QBoxLayout::LeftToRight);
+		layoutAB->addWidget(m_downBoundInput);
+		layoutAB->addWidget(m_upBoundInput);
+		layoutMain->addLayout(layoutAB);
 
-		m_buttonCalc = new QPushButton("Calculate", this);
+		QCheckBox* parserSelectCheckBox = new QCheckBox("Use new parser");
+		layoutMain->addWidget(parserSelectCheckBox);
+
+		m_buttonCalc = new QPushButton("Calculate");
 		m_buttonCalc->setToolTip("Calculate integral and plot graphic");
-		m_buttonCalc->setGeometry(20, 100, 70, 30);
 		m_buttonCalc->setCheckable("true");
 
-		QPushButton* buttonExit = new QPushButton("Exit", this);
+		QPushButton* buttonExit = new QPushButton("Exit");
 		buttonExit->setToolTip("Quit from application");
-		buttonExit->setGeometry(110, 100, 70, 30);
+		
+		QVBoxLayout* layoutButtons = new QVBoxLayout();
+		layoutButtons->setDirection(QBoxLayout::LeftToRight);
+		layoutButtons->addWidget(m_buttonCalc);
+		layoutButtons->addWidget(buttonExit);
+		layoutMain->addLayout(layoutButtons);
 	
-		m_progressBar = new QProgressBar(this);
+		m_progressBar = new QProgressBar();
 		m_progressBar->setRange(0, 100);
 		m_progressBar->setValue(progress);
-		m_progressBar->setGeometry(10, 180, 180, 10);
+		m_progressBar->setFixedHeight(10);
+		layoutMain->addWidget(m_progressBar);
 
-		m_outputField = new QLabel(this);
-		m_outputField->setGeometry(10, 140, 180, 20);
-		m_outputField->setText("Result will appear here");
+		QGroupBox* resultGroup = new QGroupBox("Result");
+		QVBoxLayout* resultLayout = new QVBoxLayout;
+		layoutMain->addWidget(resultGroup);
+		
+		m_outputField = new QLabel("Result will appear here");
+		resultLayout->addWidget(m_outputField);
+		resultLayout->addStretch(1);
+		resultGroup->setLayout(resultLayout);
 
 
 		// binding calculating the integral

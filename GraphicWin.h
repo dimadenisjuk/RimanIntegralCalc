@@ -13,6 +13,8 @@ class QPushButton;
 class QProgressBar;
 class QSlider;
 class QLabel;
+class QGroupBox;
+class QVBoxLayout;
 class Window : public QWidget {
 	Q_OBJECT
 	public:
