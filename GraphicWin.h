@@ -12,13 +12,15 @@ class QCheckBox;
 class QPushButton;
 class QProgressBar;
 class QSlider;
+class QLabel;
 class Window : public QWidget {
 	Q_OBJECT
 	public:
 		explicit Window(QWidget *parent = 0);
 	private:
 		QPushButton* m_buttonCalc;
-		QProgressBar* progressBar;
+		QLabel* m_outputField;
+		QProgressBar* m_progressBar;
 	public: // temporary?
 		QLineEdit* m_integralInput;
 		QLineEdit* m_downBoundInput;

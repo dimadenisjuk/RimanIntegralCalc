@@ -22,17 +22,21 @@ Window::Window(QWidget* parent) :
 
 		m_buttonCalc = new QPushButton("Calculate", this);
 		m_buttonCalc->setToolTip("Calculate integral and plot graphic");
-		m_buttonCalc->setGeometry(50, 100, 130, 30);
+		m_buttonCalc->setGeometry(20, 100, 70, 30);
 		m_buttonCalc->setCheckable("true");
 
 		QPushButton* buttonExit = new QPushButton("Exit", this);
 		buttonExit->setToolTip("Quit from application");
-		buttonExit->setGeometry(50, 150, 130, 30);
+		buttonExit->setGeometry(110, 100, 70, 30);
 	
-		progressBar = new QProgressBar(this);
-		progressBar->setRange(0, 100);
-		progressBar->setValue(progress);
-		progressBar->setGeometry(10, 180, 180, 10);
+		m_progressBar = new QProgressBar(this);
+		m_progressBar->setRange(0, 100);
+		m_progressBar->setValue(progress);
+		m_progressBar->setGeometry(10, 180, 180, 10);
+
+		m_outputField = new QLabel(this);
+		m_outputField->setGeometry(10, 140, 180, 20);
+		m_outputField->setText("Result will appear here");
 
 
 		// binding calculating the integral
@@ -55,7 +59,7 @@ void Window::slotStartCalculate() { // костыль!!!
 }
 
 void Window::slotChangeProgress() {
-	progressBar->setValue(progress);
+	m_progressBar->setValue(progress);
 }
 
 void Window::slotButtonClicked(bool checked) {
@@ -72,7 +76,7 @@ void Window::slotCalculated(T value) {
 	m_buttonCalc->setText("Recalculate");
 	QString str;
 	str = QString::fromStdString("(" + to_string(value.real()) + " ; " + to_string(value.imag()) + ")");
-	m_buttonCalc->setText(str);
+	m_outputField->setText(str);
 	ThreadGNUPlot* threadGNUPlot = new ThreadGNUPlot("threadGNUPlot", this);
 	threadGNUPlot->start();
 }
