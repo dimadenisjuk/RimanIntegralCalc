@@ -142,7 +142,6 @@ T Integ::ResultNew(int* progress, long long presition) {
 	
 	T value;
 	
-	const char* str = "(x+2)*sin(x^22.1E-1)";
 	Parser prs(_func);
 	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	

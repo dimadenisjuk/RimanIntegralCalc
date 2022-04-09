@@ -7,12 +7,13 @@ Window::Window(QWidget* parent) :
 	{
 		setFixedSize(200, 200);
 
-		m_integralInput = new QTextEdit(this);
+		m_integralInput = new QLineEdit(this);
 		m_integralInput->setPlaceholderText("Input integral");
 		m_downBoundInput = new QLineEdit(this);
 		m_downBoundInput->setPlaceholderText("a");
 		m_upBoundInput = new QLineEdit(this);
 		m_upBoundInput->setPlaceholderText("b");
+		m_integralInput->setGeometry(10, 10, 180, 20);
 		m_downBoundInput->setGeometry(30, 40, 50, 20);
 		m_upBoundInput->setGeometry(90, 40, 50, 20);
 

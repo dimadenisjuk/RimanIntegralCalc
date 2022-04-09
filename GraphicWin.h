@@ -20,7 +20,7 @@ class Window : public QWidget {
 		QPushButton* m_buttonCalc;
 		QProgressBar* progressBar;
 	public: // temporary?
-		QTextEdit* m_integralInput;
+		QLineEdit* m_integralInput;
 		QLineEdit* m_downBoundInput;
 		QLineEdit* m_upBoundInput;
 		int progress;
