@@ -1,4 +1,4 @@
-#define USE_QT6
+//#define USE_QT6
 
 #include "Definitions.h"
 #include "Integral.h"
