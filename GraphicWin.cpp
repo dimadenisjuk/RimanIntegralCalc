@@ -5,7 +5,7 @@ Window::Window(QWidget* parent) :
 	QWidget(parent),
 	progress(0)
 	{
-		setFixedSize(200, 250);
+		setFixedSize(320, 300);
 		QVBoxLayout* layoutMain = new QVBoxLayout(this);
 		layoutMain->setDirection(QBoxLayout::TopToBottom);
 		m_integralInput = new QLineEdit();
@@ -33,12 +33,34 @@ Window::Window(QWidget* parent) :
 
 		QPushButton* buttonExit = new QPushButton("Exit");
 		buttonExit->setToolTip("Quit from application");
+
 		
 		QVBoxLayout* layoutButtons = new QVBoxLayout();
 		layoutButtons->setDirection(QBoxLayout::LeftToRight);
 		layoutButtons->addWidget(m_buttonCalc);
 		layoutButtons->addWidget(buttonExit);
 		layoutMain->addLayout(layoutButtons);
+
+		m_presitionLL = new QRadioButton("LL");
+		m_presitionL = new QRadioButton("L");
+		m_presitionM = new QRadioButton("M");
+		m_presitionH = new QRadioButton("H");
+		m_presitionHH = new QRadioButton("HH");
+		m_presitionFINE = new QRadioButton("FINE");
+
+		QGroupBox* presitionGroup = new QGroupBox("Presition");
+		QVBoxLayout* presitionLayout = new QVBoxLayout();
+		layoutMain->addWidget(presitionGroup);
+		presitionLayout->setDirection(QBoxLayout::LeftToRight);
+		presitionLayout->addWidget(m_presitionLL);
+		presitionLayout->addWidget(m_presitionL);
+		presitionLayout->addWidget(m_presitionM);
+		presitionLayout->addWidget(m_presitionH);
+		presitionLayout->addWidget(m_presitionHH);
+		presitionLayout->addWidget(m_presitionFINE);
+		presitionGroup->setLayout(presitionLayout);
+		
+		m_presitionM->setChecked(true);
 	
 		m_progressBar = new QProgressBar();
 		m_progressBar->setRange(0, 100);

@@ -10,6 +10,7 @@ class QTextEdit;
 class QLineEdit;
 class QCheckBox;
 class QPushButton;
+class QRadioButton;
 class QProgressBar;
 class QSlider;
 class QLabel;
@@ -29,6 +30,14 @@ class Window : public QWidget {
 		QLineEdit* m_upBoundInput;
 		QCheckBox* m_parserSelectCheckBox;
 		int progress;
+		
+		QRadioButton* m_presitionLL;
+		QRadioButton* m_presitionL;
+		QRadioButton* m_presitionM;
+		QRadioButton* m_presitionH;
+		QRadioButton* m_presitionHH;
+		QRadioButton* m_presitionFINE;
+
 	private:
 		T _a, _b;
 		char* _func;
