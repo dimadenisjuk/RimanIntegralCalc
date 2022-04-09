@@ -21,10 +21,25 @@ int main(int argc, char* argv[]) {
 	SetConsoleOutputCP(65001);
 #endif //windows
 	Integ ob1;
-	cout << "# Введите интегрируемую функцию, начало и конец отрезка  " << endl;
+	cout << "# Введите интегрируемую функцию, начало и конец отрезка\nи необходимую точность вычислений (LL < L < M < H < HH < FINE) " << endl;
 	cin >> ob1;
+	char* strPresition = new char[100];
+	cin >> strPresition;
+	long long presition;
+	if(!strcmp(strPresition, "LL"))
+		presition = PRESITION_LL;
+	if(!strcmp(strPresition, "L"))
+		presition = PRESITION_L;
+	if(!strcmp(strPresition, "M"))
+		presition = PRESITION_M;
+	if(!strcmp(strPresition, "H"))
+		presition = PRESITION_H;
+	if(!strcmp(strPresition, "HH"))
+		presition = PRESITION_HH;
+	if(!strcmp(strPresition, "FINE"))
+		presition = PRESITION_FINE;
 	int progress = 0;
-	T res = fun(ob1, &progress, PARSER_NEW, PRESITION_M);
+	T res = fun(ob1, &progress, PARSER_NEW, presition);
 	cout << "# Значение интеграла (площадь под фигурой): " << res << endl;
 	cout << "# Введите \"quit\" для выхода из GNUPlot" << endl;
 	system(GNUPLOT);

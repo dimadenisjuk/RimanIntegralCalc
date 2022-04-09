@@ -132,7 +132,7 @@ doOperation:
 	return op(ParseExprOld(leftS), ParseExprOld(rightS));
 }
 
-T Integ::ResultNew(int* progress, int presition) {
+T Integ::ResultNew(int* progress, long long presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
@@ -143,8 +143,8 @@ T Integ::ResultNew(int* progress, int presition) {
 	T value;
 	
 	const char* str = "(x+2)*sin(x^22.1E-1)";
-	Parser prs1(_func);
-	Node* root = prs1.Parse(); //Получаем корневой узел дерева вычислений
+	Parser prs(_func);
+	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	
 	bool complexResult = false;
 	ofstream outFile;
@@ -180,7 +180,7 @@ T Integ::ResultNew(int* progress, int presition) {
 }
 
 // разбираем строку формата:  функция(коэффицент*x+константа)
-T Integ::ResultOld(int* progress, int presition) {
+T Integ::ResultOld(int* progress, long long presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
@@ -258,7 +258,7 @@ T Integ::ResultOld(int* progress, int presition) {
 	return Square;
 };
 
-T fun(Integ& ob1, int* progress, int parserVersion, int presition)
+T fun(Integ& ob1, int* progress, int parserVersion, long long presition)
 {
 	if(!parserVersion)
 		return ob1.ResultOld(progress, presition);

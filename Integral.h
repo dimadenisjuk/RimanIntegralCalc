@@ -39,10 +39,10 @@ public:
 	friend ostream& operator <<(ostream& stream, const Integ& ob1);
 	friend istream& operator >>(istream& stream, Integ& ob2);
 
-	T ResultOld(int* progress, int prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
+	T ResultOld(int* progress, long long prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
 	T ParseExprOld(const char*);
 
-	T ResultNew(int* progress, int presition);
+	T ResultNew(int* progress, long long presition);
 };
 /*
 class MyException {
@@ -54,4 +54,4 @@ public:
 	void printMessage();
 };*/
 
-T fun(Integ& ob1, int* progress, int parserVersion=1, int presition=PRESITION_M);
+T fun(Integ& ob1, int* progress, int parserVersion=1, long long presition=PRESITION_M);
