@@ -23,8 +23,9 @@ Window::Window(QWidget* parent) :
 		layoutAB->addWidget(m_upBoundInput);
 		layoutMain->addLayout(layoutAB);
 
-		QCheckBox* parserSelectCheckBox = new QCheckBox("Use new parser");
-		layoutMain->addWidget(parserSelectCheckBox);
+		m_parserSelectCheckBox = new QCheckBox("Use new parser");
+		m_parserSelectCheckBox->setChecked(true);
+		layoutMain->addWidget(m_parserSelectCheckBox);
 
 		m_buttonCalc = new QPushButton("Calculate");
 		m_buttonCalc->setToolTip("Calculate integral and plot graphic");

@@ -27,6 +27,7 @@ class Window : public QWidget {
 		QLineEdit* m_integralInput;
 		QLineEdit* m_downBoundInput;
 		QLineEdit* m_upBoundInput;
+		QCheckBox* m_parserSelectCheckBox;
 		int progress;
 	private:
 		T _a, _b;

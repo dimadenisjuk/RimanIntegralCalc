@@ -6,7 +6,7 @@ ThreadCalc::ThreadCalc(QString threadName, Window* win) :
 {
 
 }
-
+// Поток, вычисляющий значение интеграла
 void ThreadCalc::run()
 {
 	QString string = window->m_integralInput->text();
@@ -17,11 +17,11 @@ void ThreadCalc::run()
 	ob1.SetFunc(string2);
 	ob1.Seta(window->m_downBoundInput->text().toDouble());
 	ob1.Setb(window->m_upBoundInput->text().toDouble());
-	T res = fun(ob1, &window->progress, PARSER_NEW, PRESITION_M);
+	bool useNewParser = window->m_parserSelectCheckBox->isChecked();
+	T res = fun(ob1, &window->progress, useNewParser, PRESITION_M);
 	emit window->signalCalculated(res);
 	
 }
-
 
 ThreadGNUPlot::ThreadGNUPlot(QString threadName, Window* win) :
 	name(threadName),
@@ -29,7 +29,7 @@ ThreadGNUPlot::ThreadGNUPlot(QString threadName, Window* win) :
 {
 
 }
-
+// Поток, в котором запускается GNUPlot
 void ThreadGNUPlot::run()
 {
 	system(GNUPLOT);
