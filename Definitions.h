@@ -15,4 +15,9 @@
 #define GNUPLOT "gnuplot graphP -"
 #endif //windows
 
+#include<ccomplex>
+using namespace std;
+typedef complex<double> T;
+//typedef double T;
+
 #endif //DEFINITIONS_H

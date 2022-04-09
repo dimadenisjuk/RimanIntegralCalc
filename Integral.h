@@ -4,9 +4,10 @@
 #include<cstdlib>
 #include <iostream>
 #include<iomanip>
-#include<ccomplex>
 #include <cstring>
 #include <fstream>
+#include "Definitions.h"
+
 //#include<complex.h>
 using namespace std;
 
@@ -15,8 +16,6 @@ using namespace std;
 #endif
 
 #define MAX_INPUT_LENGTH 100
-typedef complex<double> T;
-//typedef double T;
 
 class Integ {
 	T _a;

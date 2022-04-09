@@ -1,5 +1,7 @@
 #include "ParserNew.h"
 #include <ctype.h>
+#include "Mathfunctions.h"
+
 
 Token::Token() {
 	type = Unknown;
@@ -249,12 +251,64 @@ Node* Parser::Parse() {
 	return root;
 }
 
-int main() {
-	const char* str = "(x+2)*sin(x^22.1E-1)";
-	Scanner scn(str);
-	//while(true)
-	//	scn.GetToken().Print();
-	Parser prs(str);
-	prs.Parse();
-	return 0;
+void Node::Print(int depth) {
+	if(type == Primary)
+	{
+		printf("\n%d: %s -> ", depth, token.value);
+	}
+	else if(type == Unary)
+	{
+		printf("\n%d: %s", depth, token.value);
+		printf("\n%d ->", depth);
+		pLeft->Print(depth+1);
+	}
+	else if(type == Additive || type == Multiplicative || type == Power)
+	{
+		printf("\n%d: %s", depth, token.value);
+		printf("\n%d left ->", depth);
+		pLeft->Print(depth+1);
+		printf("\n%d right ->", depth);
+		pRight->Print(depth+1);
+	}
+	else
+	{
+		printf("[err]: Unknown node: %s\n", token.value);
+		assert(false);
+	}
 }
+
+T Calculate(Node* node, T firstVar) {
+	//printf("\nCalculating: %s\n", node->token.value);
+	if(node->type == Node::Primary)
+	{
+		if(node->token.type == Token::Number)
+			return atoi(node->token.value);
+		if(node->token.type == Token::Variable)
+			return firstVar;
+		if(node->token.type == Token::Constant)
+			assert(false); // Не реализовано
+	}
+	else if(node->type == Node::Unary)
+	{
+		if(!strcmp(node->token.value, "sin"))
+			return mySin(Calculate(node->pLeft, firstVar));
+		printf("[err]: Not implemented: %s\n", node->token.value);
+		assert(false); // Не реализовано
+	}
+	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+	{
+		if(node->token.type == Token::Addition)
+			return Calculate(node->pLeft, firstVar) + Calculate(node->pRight, firstVar);
+		if(node->token.type == Token::Subtraction)
+			return Calculate(node->pLeft, firstVar) - Calculate(node->pRight, firstVar);
+		if(node->token.type == Token::Multiplication)
+			return Calculate(node->pLeft, firstVar) * Calculate(node->pRight, firstVar);
+		if(node->token.type == Token::Division)
+			return Calculate(node->pLeft, firstVar) / Calculate(node->pRight, firstVar);
+		if(node->token.type == Token::Power)
+			return myPow(Calculate(node->pLeft, firstVar),  Calculate(node->pRight, firstVar));
+	}
+	printf("[err]: Unknown node: %s\n", node->token.value);
+	assert(false);
+}
+

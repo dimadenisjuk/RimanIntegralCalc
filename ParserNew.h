@@ -60,6 +60,7 @@ public:
 	Node *pLeft, *pRight; // Дочерние узлы
 	Token token; // Операция над ними
 	Node(EType type);
+	void Print(int depth = 0);
 };
 
 class Parser : Scanner {
