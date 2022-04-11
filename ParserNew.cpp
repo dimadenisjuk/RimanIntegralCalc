@@ -79,28 +79,28 @@ Token Scanner::GetToken() {
 				++pCurrent;
 				if(*(pCurrent++) == 'o')
 					if(*(pCurrent++) == 's')
-						return CreateToken(pCurrent-3, 3, Token::Function);
+						return CreateToken("cos", 3, Token::Function);
 				return CreateToken("", 0, Token::Empty);
 			case 'p': //may be 'pi'
 				++pCurrent;
 				if(*(pCurrent++) == 'i')
-					return CreateToken(pCurrent-2, 2, Token::Constant);
+					return CreateToken("pi", 2, Token::Constant);
 				return CreateToken("", 0, Token::Empty);
 			case 's': // may be 'sin'
 				++pCurrent;
 				if(*(pCurrent++) == 'i')
 					if(*(pCurrent++) == 'n')
-						return CreateToken(pCurrent-3, 3, Token::Function);
+						return CreateToken("sin", 3, Token::Function);
 				return CreateToken("", 0, Token::Empty);
 			case 't': // may be 'tan' or 'tg'
 				++pCurrent;
 				if(*(pCurrent++) == 'a')
 				{
 					if(*(pCurrent++) == 'n')
-						return CreateToken(pCurrent-3, 3, Token::Function);
+						return CreateToken("tan", 3, Token::Function);
 				}
 				else if(*(pCurrent-1) == 'g')
-					return CreateToken(pCurrent-3, 3, Token::Function);
+					return CreateToken("tg", 3, Token::Function);
 				return CreateToken("", 0, Token::Empty);
 		}
 		if(isdigit(*pCurrent)) {
