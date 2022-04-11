@@ -92,6 +92,22 @@ Token Scanner::GetToken() {
 					if(*(pCurrent++) == 'n')
 						return CreateToken("sin", 3, Token::Function);
 				return CreateToken("", 0, Token::Empty);
+			case 'l': // may be 'log' or 'log10'
+				++pCurrent;
+				if(*(pCurrent++) == 'l')
+					if(*(pCurrent++) == 'o')
+						if(*(pCurrent++) == 'g')
+						{
+							if(*(pCurrent++) == '1')
+							{
+								if(*(pCurrent++) == '0')
+									return CreateToken("log10", 5, Token::Function);
+								return CreateToken("", 0, Token::Empty);
+							}
+							else
+								return CreateToken("log", 3, Token::Function);
+						}
+				return CreateToken("", 0, Token::Empty);
 			case 't': // may be 'tan' or 'tg'
 				++pCurrent;
 				if(*(pCurrent++) == 'a')
