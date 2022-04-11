@@ -303,7 +303,6 @@ void Node::Print(int depth) {
 }
 
 T Calculate(Node* node, T firstVar) {
-	//printf("\nCalculating: %s\n", node->token.value);
 	if(node->type == Node::Primary)
 	{
 		if(node->token.type == Token::Number)
@@ -311,7 +310,10 @@ T Calculate(Node* node, T firstVar) {
 		if(node->token.type == Token::Variable)
 			return firstVar;
 		if(node->token.type == Token::Constant)
+		{
+			printf("[err]: Constant not implemented: %s\n", node->token.value);
 			assert(false); // Не реализовано
+		}
 	}
 	else if(node->type == Node::Unary)
 	{
@@ -341,7 +343,7 @@ T Calculate(Node* node, T firstVar) {
 			return myCot(Calculate(node->pLeft, firstVar));
 		if(!strcmp(node->token.value, "acot"))
 			return myAcot(Calculate(node->pLeft, firstVar));
-		printf("[err]: Not implemented: %s\n", node->token.value);
+		printf("[err]: Function not implemented: %s\n", node->token.value);
 		assert(false); // Не реализовано
 	}
 	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
@@ -356,13 +358,14 @@ T Calculate(Node* node, T firstVar) {
 			return Calculate(node->pLeft, firstVar) / Calculate(node->pRight, firstVar);
 		if(node->token.type == Token::Power)
 			return myPow(Calculate(node->pLeft, firstVar),  Calculate(node->pRight, firstVar));
+		printf("[err]: Operation not implemented: %s\n", node->token.value);
+		assert(false); // Не реализовано
 	}
 	printf("[err]: Unknown node: %s\n", node->token.value);
 	assert(false);
 }
 
 void CalculatePrint(Node* node, T firstVar) {
-	//printf("\nCalculating: %s\n", node->token.value);
 	if(node->type == Node::Primary)
 	{
 		printf(" %s ", node->token.value);

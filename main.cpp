@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 	SetConsoleOutputCP(65001);
 #endif //windows
 	Integ ob1;
-	cout << "# Введите интегрируемую функцию, начало и конец отрезка\nи необходимую точность вычислений (LL < L < M < H < HH < FINE) " << endl;
+	cout << Strings[IStrMainTip].M_LANG << endl;
 	cin >> ob1;
 	char* strPresition = new char[100];
 	cin >> strPresition;
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
 		presition = PRESITION_FINE;
 	int progress = 0;
 	T res = fun(ob1, &progress, PARSER_NEW, presition);
-	cout << "# Значение интеграла (площадь под фигурой): " << res << endl;
-	cout << "# Введите \"quit\" для выхода из GNUPlot" << endl;
+	cout << Strings[IStrIntegValue].M_LANG << res << endl;
+	cout << Strings[IStrQuitGNUPlot].M_LANG << endl;
 	system(GNUPLOT);
 	return 0;
 #endif //USE_QT6

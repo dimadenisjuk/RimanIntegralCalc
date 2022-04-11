@@ -17,6 +17,11 @@
 #define GNUPLOT "gnuplot graphP -"
 #endif //MS_WINDOWS
 
+// Язык программы:
+//#define M_LANG en
+#define M_LANG ru
+#include "Strings.h" // Strings on russian and english language
+
 // Presition:
 #define PRESITION_LL	100000
 #define PRESITION_L	1000000
