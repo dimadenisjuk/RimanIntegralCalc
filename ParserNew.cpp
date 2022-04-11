@@ -75,13 +75,24 @@ Token Scanner::GetToken() {
 				return CreateToken(pCurrent++, 1, Token::Right);
 			case 'x':
 				return CreateToken(pCurrent++, 1, Token::Variable);
-			case 'c': // may be 'cos'
+			case 'c': // may be 'cos' or 'cot'
 				++pCurrent;
 				if(*(pCurrent++) == 'o')
+				{
 					if(*(pCurrent++) == 's')
 						return CreateToken("cos", 3, Token::Function);
+					if(*(pCurrent++) == 't')
+						return CreateToken("cot", 3, Token::Function);
+				}
 				return CreateToken("", 0, Token::Empty);
-			case 'p': //may be 'pi'
+			case 'e': // may be 'exp'
+				++pCurrent;
+				if((*pCurrent++) == 'e')
+					if(*(pCurrent++) == 'x')
+						if(*(pCurrent++) == 'p')
+							return CreateToken("exp", 3, Token::Function);
+				return CreateToken("", 0, Token::Empty);
+			case 'p': // may be 'pi'
 				++pCurrent;
 				if(*(pCurrent++) == 'i')
 					return CreateToken("pi", 2, Token::Constant);
