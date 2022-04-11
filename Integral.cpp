@@ -145,7 +145,7 @@ T Integ::ResultNew(int* progress, long long presition) {
 	Parser prs(_func);
 	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	
-	printf("Understood expression like:\n");
+	printf("%s\n", Strings[IStrUnderstoodLike].M_LANG);
 	CalculatePrint(root, 0);  //Вывод разобранного выражения
 	printf("\n");
 
@@ -166,7 +166,7 @@ T Integ::ResultNew(int* progress, long long presition) {
 		progressExact = 100 * i.real() / (n.real() - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
-			printf("\rCalculating: %d%%", (int)progressExact);
+			printf("\r%s %d%%", Strings[IStrCalculating].M_LANG, (int)progressExact);
 			cout.flush(); // мгновенная печать потока cout
 			*progress = (int)(progressExact);
 		}
@@ -224,7 +224,7 @@ T Integ::ResultOld(int* progress, long long presition) {
 	}
 	if (j == _countof(functions))
 	{
-		cout << "Illegal function\n";
+		cout << Strings[IStrIllegalFunc].M_LANG << endl;
 		return 0;
 	}
 	T value;
@@ -245,7 +245,7 @@ T Integ::ResultOld(int* progress, long long presition) {
 		progressExact = 100 * i.real() / (n.real() - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
-			cout << "\rCalculating: " << (int)progressExact << "%";
+			cout << "\r" << Strings[IStrCalculating].M_LANG << (int)progressExact << "%";
 			cout.flush(); // мгновенная печать потока cout
 			*progress = (int)(progressExact);
 		}
