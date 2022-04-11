@@ -141,7 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Integral.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Stack.cpp" />
+    <ClCompile Include="ParserNew.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Definitions.h" />

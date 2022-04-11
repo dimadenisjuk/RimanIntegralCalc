@@ -3,8 +3,8 @@
 
 #define MAX_NUM_LENGTH 40
 
-#include "Stack.h"
 #include "Mathfunctions.h"
+#include "Stack.h"
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>

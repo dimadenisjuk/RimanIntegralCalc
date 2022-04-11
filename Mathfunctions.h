@@ -1,8 +1,8 @@
 #ifndef MATHFUNCTIONS_H
 #define MATHFUNCTIONS_H
 
-#include <math.h>
 #include "Definitions.h"
+#include <math.h>
 
 const static T tmpEd = 1;
 

@@ -1,12 +1,10 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
-#define _CRT_NONSTDC_NO_WARNINGS
+#include "Definitions.h"
 #include<cstdlib>
 #include <iostream>
 #include<iomanip>
 #include <cstring>
 #include <fstream>
-#include "Definitions.h"
 #include "ParserNew.h"
 
 //#include<complex.h>
