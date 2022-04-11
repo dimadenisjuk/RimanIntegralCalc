@@ -77,5 +77,6 @@ class Parser : Scanner {
 };
 
 T Calculate(Node* node, T firstVar); // Подсчёт значения выражения
+void CalculatePrint(Node* node, T firstVar); // Подсчёт значения выражения
 
 #endif //PARSERNEW_H

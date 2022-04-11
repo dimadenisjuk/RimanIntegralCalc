@@ -145,6 +145,10 @@ T Integ::ResultNew(int* progress, long long presition) {
 	Parser prs(_func);
 	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	
+	printf("Understood expression like:\n");
+	CalculatePrint(root, 0);  //Вывод разобранного выражения
+	printf("\n");
+
 	bool complexResult = false;
 	ofstream outFile;
 	// заполняем файл с данными для GNUPlot

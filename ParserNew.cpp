@@ -361,3 +361,32 @@ T Calculate(Node* node, T firstVar) {
 	assert(false);
 }
 
+void CalculatePrint(Node* node, T firstVar) {
+	//printf("\nCalculating: %s\n", node->token.value);
+	if(node->type == Node::Primary)
+	{
+		printf(" %s ", node->token.value);
+		return;
+	}
+	else if(node->type == Node::Unary)
+	{
+		printf(" %s ", node->token.value);
+		printf("[");
+		CalculatePrint(node->pLeft, firstVar);
+		printf("]");
+		return;
+	}
+	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+	{
+		printf("[");
+		CalculatePrint(node->pLeft, firstVar);
+		printf("]");
+		printf(" %s ", node->token.value);
+		printf("[");
+		CalculatePrint(node->pRight, firstVar);
+		printf("]");
+		return;
+	}
+	printf("[err]: Unknown node: %s\n", node->token.value);
+	assert(false);
+}
