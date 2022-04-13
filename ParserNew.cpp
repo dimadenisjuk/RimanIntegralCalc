@@ -302,172 +302,176 @@ void Node::Print(int depth) {
 	}
 }
 
-Node* Differentiation(Node* node) {
+Node* Parser::Differentiation(Node* node) {
 	if(node->type == Node::Primary)
 	{
 		Node* result = new Node(Node::Primary);
-		result->right = null;
-		result->token.value = new char[2];
-		if(node->token.type == Token::Number)
-			strcpy(result->token.value, "0");
-		else if(node->token.type == Token::Variable)
-			strcpy(result->token.value, "1"); // КОСТЫЛЬ!!!
-		else if(node->token.type == Token::Constant)
-			strcpy(result->token.value, "0");
-		nodes.Push(result);
-		result->left = null;
-		return result;
-	}
-	else if(node->type == Node::Unary) // IMPLEMENT!!!
-	{/*
-		if(!strcmp(node->token.value, "sin"))
-			return mySin(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "cos"))
-			return myCos(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "tan"))
-			return myTan(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "tg"))
-			return myTan(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "acos"))
-			return myAcos(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "asin"))
-			return myAsin(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "atan"))
-			return myAtan(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "exp"))
-			return myAtan(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "tanh"))
-			return myTanh(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "log"))
-			return myLog(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "log10"))
-			return myLog10(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "cot"))
-			return myCot(Calculate(node->pLeft, firstVar));
-		if(!strcmp(node->token.value, "acot"))
-			return myAcot(Calculate(node->pLeft, firstVar));*/
-		printf("[err]: Function not implemented: %s\n", node->token.value);
-		assert(false); // Не реализовано
-	}
-	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
-	{
-		if(node->token.type == Token::Addition) // (u+v)' = u' + v'
-		{
-			Node* result = new Node(Node::Additive);
 			nodes.Push(result);
+			result->pLeft = nullptr;
+			result->pRight = nullptr;
 			result->token.value = new char[2];
-			result->token.type = Token::Addition;
-			strcpy(result->token.value, "+");
-			result->left = Differentiation(node->left);
-			result->right = Differentiation(node->right);
+			if(node->token.type == Token::Number)
+				strcpy(result->token.value, "0");
+			else if(node->token.type == Token::Variable)
+				strcpy(result->token.value, "1"); // КОСТЫЛЬ!!!
+			else if(node->token.type == Token::Constant)
+				strcpy(result->token.value, "0");
 			return result;
 		}
-		if(node->token.type == Token::Subtraction) // (u-v)' = u' - v' 
-		{
-			Node* result = new Node(Node::Additive);
-			nodes.Push(result);
-			result->token.value = new char[2];
-			result->token.type = Token::Subtraction;
-			strcpy(result->token.value, "-");
-			result->left = Differentiation(node->left);
-			result->right = Differentiation(node->right);
-			return result;
-		}
-		if(node->token.type == Token::Multiplication) // (u*v)' = u'*v + v'*u
-		{
-			Node* result = new Node(Node::Additive);
-			nodes.Push(result);
-			result->token.value = new char[2];
-			result->token.type = Token::Addition;
-			strcpy(result->token.value, "+"); // u'*v + v'*u
-			result->left = new Node(Node::Multiplicative);
-			nodes.Push(result->left);
-			result->left->token.value = new char[2];
-			result->left->token.type = Token::Multiplication;
-			strcpy(result->token.value, "*"); // u'*v
-			result->left->left = Differentiation(node->left); // u'
-			result->left->right = new Node(Node::Expression); // v
-			nodes.Push(result->left->right);
-			result->left->right->token.type = node->right.token.type;
-			result->left->right->token.value = node->right.token.value;
-			result->left->right->left = node->right->left;
-			result->left->right->right = node->right->right;
-			result->right = new Node(Node::Multiplicative);
-			nodes.Push(result->right);
-			result->right->token.value = new char[2];
-			result->right->token.type = Token::Multiplication;
-			strcpy(result->right->token.value, "*"); // v'*u
-			result->right->left = Differentiation(node->right); // v'
-			result->right->right = new Node(Node::Expression); // u
-			nodes.Push(result->right->right);
-			result->right->right->token.type = node->left.token.type;
-			result->right->right->token.value = node->left.token.value;
-			result->right->right->left = node->left->left;
-			result->right->right->right = node->left->right;
-			return result;
-		}
-		if(node->token.type == Token::Division) // (u/v)' = (u'*v - v'*u)/(v^2)
-		{
-			Node* result = new Node(Node::Multiplicative);
-			nodes.Push(result);
-			result->token.value = new char[2];
-			result->token.type = Token::Addition;
-			strcpy(result->token.value, "/"); // (u'*v - v'*u)/(v^2)
-			result->left = new Node(Node::Additive);
-			result->left->token.value = new char[2];
-			result->left->token.type = Token::Subtraction;
-			strcpy(result->left->token.value, "-"); // u'*v - v'*u
-			result->left->left = new Node(Node::Multiplicative);
-			nodes.Push(result->left->left);
-			result->left->left->token.value = new char[2];
-			result->left->left->token.type = Token::Multiplication;
-			strcpy(result->left->token.value, "*"); // u'*v
-			result->left->left->left = Differentiation(node->left); // u'
-			result->left->left->right = new Node(Node::Expression); // v
-			nodes.Push(result->left->left->right);
-			result->left->left->right->token.type = node->right.token.type;
-			result->left->left->right->token.value = node->right.token.value;
-			result->left->left->right->left = node->right->left;
-			result->left->left->right->right = node->right->right;
-			result->left->right = new Node(Node::Multiplicative);
-			nodes.Push(result->left->right);
-			result->left->right->token.value = new char[2];
-			result->left->right->token.type = Token::Multiplication;
-			strcpy(result->left->right->token.value, "*"); // v'*u
-			result->left->right->left = Differentiation(node->right); // v'
-			result->left->right->right = new Node(Node::Expression); // u
-			nodes.Push(result->left->right->right);
-			result->left->right->right->token.type = node->left.token.type;
-			result->left->right->right->token.value = node->left.token.value;
-			result->left->right->right->left = node->left->left;
-			result->left->right->right->right = node->left->right;
-			result->right = new Node(Node::Power); // v^2
-			nodes.Push(result->right);
-			result->right->token->value = new char[2];
-			result->right->token->type = Token::Power;
-			strcpy(result->right->token->value, "^");
-			result->right->left = new Node(Node::Expression); // v
-			nodes.Push(result->right->left);
-			result->right->left->token.type = node->right.token.type;
-			result->right->left->token.value = node->right.token.value;
-			result->right->left->left = node->right->left;
-			result->right->left->right = node->right->right;
-			result->right->right = new Node(Node::Primary); // 2
-			nodes.Push(result-right->right);
-			result->right->right->token.value = new char[2];
-			result->right->right->token.type = Token::Number;
-			strcpy(result->right->right->token.value, "2");
-			return result;
-		}
-		else 
-		{
-			printf("[err]: Operation not implemented: %s\n", node->token.value);
+		else if(node->type == Node::Unary) // IMPLEMENT!!!
+		{/*
+			if(!strcmp(node->token.value, "sin"))
+				return mySin(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "cos"))
+				return myCos(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "tan"))
+				return myTan(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "tg"))
+				return myTan(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "acos"))
+				return myAcos(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "asin"))
+				return myAsin(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "atan"))
+				return myAtan(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "exp"))
+				return myAtan(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "tanh"))
+				return myTanh(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "log"))
+				return myLog(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "log10"))
+				return myLog10(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "cot"))
+				return myCot(Calculate(node->pLeft, firstVar));
+			if(!strcmp(node->token.value, "acot"))
+				return myAcot(Calculate(node->pLeft, firstVar));*/
+			printf("[err]: Function not implemented: %s\n", node->token.value);
 			assert(false); // Не реализовано
 		}
-		return result;
-	}
-	printf("[err]: Unknown node: %s\n", node->token.value);
-	assert(false); // Не реализовано
+		else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+		{
+			if(node->token.type == Token::Addition) // (u+v)' = u' + v'
+			{
+				Node* result = new Node(Node::Additive);
+				nodes.Push(result);
+				result->token.value = new char[2];
+				result->token.type = Token::Addition;
+				strcpy(result->token.value, "+");
+				result->pLeft = Differentiation(node->pLeft);
+				result->pRight = Differentiation(node->pRight);
+				return result;
+			}
+			if(node->token.type == Token::Subtraction) // (u-v)' = u' - v' 
+			{
+				Node* result = new Node(Node::Additive);
+				nodes.Push(result);
+				result->token.value = new char[2];
+				result->token.type = Token::Subtraction;
+				strcpy(result->token.value, "-");
+				result->pLeft = Differentiation(node->pLeft);
+				result->pRight = Differentiation(node->pRight);
+				return result;
+			}
+			if(node->token.type == Token::Multiplication) // (u*v)' = u'*v + v'*u
+			{
+				Node* result = new Node(Node::Additive);
+				nodes.Push(result);
+				result->token.value = new char[2];
+				result->token.type = Token::Addition;
+				strcpy(result->token.value, "+"); // u'*v + v'*u
+				result->pLeft = new Node(Node::Multiplicative);
+				nodes.Push(result->pLeft);
+				result->pLeft->token.value = new char[2];
+				result->pLeft->token.type = Token::Multiplication;
+				strcpy(result->pLeft->token.value, "*"); // u'*v
+				result->pLeft->pLeft = Differentiation(node->pLeft); // u'
+				result->pLeft->pRight = new Node(Node::Expression); // v
+				nodes.Push(result->pLeft->pRight);
+				result->pLeft->pRight->type = node->pRight->type;
+				result->pLeft->pRight->token.type = node->pRight->token.type;
+				result->pLeft->pRight->token.value = node->pRight->token.value;
+				result->pLeft->pRight->pLeft = node->pRight->pLeft;
+				result->pLeft->pRight->pRight = node->pRight->pRight;
+				result->pRight = new Node(Node::Multiplicative);
+				nodes.Push(result->pRight);
+				result->pRight->token.value = new char[2];
+				result->pRight->token.type = Token::Multiplication;
+				strcpy(result->pRight->token.value, "*"); // v'*u
+				result->pRight->pLeft = Differentiation(node->pRight); // v'
+				result->pRight->pRight = new Node(Node::Expression); // u
+				nodes.Push(result->pRight->pRight);
+				result->pRight->pRight->type = node->pLeft->type;
+				result->pRight->pRight->token.type = node->pLeft->token.type;
+				result->pRight->pRight->token.value = node->pLeft->token.value;
+				result->pRight->pRight->pLeft = node->pLeft->pLeft;
+				result->pRight->pRight->pRight = node->pLeft->pRight;
+				return result;
+			}
+			if(node->token.type == Token::Division) // (u/v)' = (u'*v - v'*u)/(v^2)
+			{
+				Node* result = new Node(Node::Multiplicative);
+				nodes.Push(result);
+				result->token.value = new char[2];
+				result->token.type = Token::Addition;
+				strcpy(result->token.value, "/"); // (u'*v - v'*u)/(v^2)
+				result->pLeft = new Node(Node::Additive);
+				result->pLeft->token.value = new char[2];
+				result->pLeft->token.type = Token::Subtraction;
+				strcpy(result->pLeft->token.value, "-"); // u'*v - v'*u
+				result->pLeft->pLeft = new Node(Node::Multiplicative);
+				nodes.Push(result->pLeft->pLeft);
+				result->pLeft->pLeft->token.value = new char[2];
+				result->pLeft->pLeft->token.type = Token::Multiplication;
+				strcpy(result->pLeft->pLeft->token.value, "*"); // u'*v
+				result->pLeft->pLeft->pLeft = Differentiation(node->pLeft); // u'
+				result->pLeft->pLeft->pRight = new Node(Node::Expression); // v
+				nodes.Push(result->pLeft->pLeft->pRight);
+				result->pLeft->pLeft->pRight->type = node->pRight->type;
+				result->pLeft->pLeft->pRight->token.type = node->pRight->token.type;
+				result->pLeft->pLeft->pRight->token.value = node->pRight->token.value;
+				result->pLeft->pLeft->pRight->pLeft = node->pRight->pLeft;
+				result->pLeft->pLeft->pRight->pRight = node->pRight->pRight;
+				result->pLeft->pRight = new Node(Node::Multiplicative);
+				nodes.Push(result->pLeft->pRight);
+				result->pLeft->pRight->token.value = new char[2];
+				result->pLeft->pRight->token.type = Token::Multiplication;
+				strcpy(result->pLeft->pRight->token.value, "*"); // v'*u
+				result->pLeft->pRight->pLeft = Differentiation(node->pRight); // v'
+				result->pLeft->pRight->pRight = new Node(Node::Expression); // u
+				nodes.Push(result->pLeft->pRight->pRight);
+				result->pLeft->pRight->pRight->type = node->pLeft->type;
+				result->pLeft->pRight->pRight->token.type = node->pLeft->token.type;
+				result->pLeft->pRight->pRight->token.value = node->pLeft->token.value;
+				result->pLeft->pRight->pRight->pLeft = node->pLeft->pLeft;
+				result->pLeft->pRight->pRight->pRight = node->pLeft->pRight;
+				result->pRight = new Node(Node::Power); // v^2
+				nodes.Push(result->pRight);
+				result->pRight->token.value = new char[2];
+				result->pRight->token.type = Token::Power;
+				strcpy(result->pRight->token.value, "^");
+				result->pRight->pLeft = new Node(Node::Expression); // v
+				nodes.Push(result->pRight->pLeft);
+				result->pRight->pLeft->type = node->pRight->type;
+				result->pRight->pLeft->token.type = node->pRight->token.type;
+				result->pRight->pLeft->token.value = node->pRight->token.value;
+				result->pRight->pLeft->pLeft = node->pRight->pLeft;
+				result->pRight->pLeft->pRight = node->pRight->pRight;
+				result->pRight->pRight = new Node(Node::Primary); // 2
+				nodes.Push(result->pRight->pRight);
+				result->pRight->pRight->token.value = new char[2];
+				result->pRight->pRight->token.type = Token::Number;
+				strcpy(result->pRight->pRight->token.value, "2");
+				return result;
+			}
+			else 
+			{
+				printf("[err]: Operation not implemented: %s\n", node->token.value);
+				assert(false); // Не реализовано
+			}
+		}
+		printf("[err]: Unknown node: %s\n", node->token.value);
+		assert(false); // Не реализовано
 }
 
 T Calculate(Node* node, T firstVar) {

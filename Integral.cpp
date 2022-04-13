@@ -149,6 +149,9 @@ T Integ::ResultNew(int* progress, long long presition) {
 	CalculatePrint(root, 0);  //Вывод разобранного выражения
 	printf("\n");
 
+	printf("\n");
+	CalculatePrint(prs.Differentiation(root), 0);
+	printf("\n");
 	bool complexResult = false;
 	ofstream outFile;
 	// заполняем файл с данными для GNUPlot

@@ -74,9 +74,11 @@ class Parser : Scanner {
 	public:
 	Parser(const char* source);
 	Node* Parse();
+	Node* Differentiation(Node* node);
 };
 
 T Calculate(Node* node, T firstVar); // Подсчёт значения выражения
 void CalculatePrint(Node* node, T firstVar); // Подсчёт значения выражения
+
 
 #endif //PARSERNEW_H
