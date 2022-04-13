@@ -58,9 +58,9 @@ public:
 		Unary, // Унарное выражение вида "sin a"
 		Primary // Конечное выражение вида "a"
 	} type;
+	Node(EType type);
 	Node *pLeft, *pRight; // Дочерние узлы
 	Token token; // Операция над ними
-	Node(EType type);
 	void Print(int depth = 0);
 };
 
@@ -71,12 +71,16 @@ class Parser : Scanner {
 	Node* ParseMultiplicative();
 	Node* ParsePower();
 	Node* ParsePrimary();
-	public:
+	Node* root;
+public:
 	Parser(const char* source);
 	Node* Parse();
+	~Parser();
 };
 
+void DeleteChild(Node* node);
 T Calculate(Node* node, T firstVar); // Подсчёт значения выражения
-void CalculatePrint(Node* node, T firstVar); // Подсчёт значения выражения
+void CalculatePrint(Node* node, T firstVar); // Печать вычисляемого выражения
+void PrintTree(Node* node, T firstVar, int depth = 0); // Печать вычисляемого выражения в виде дерева
 
 #endif //PARSERNEW_H

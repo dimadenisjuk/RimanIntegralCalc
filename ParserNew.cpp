@@ -14,7 +14,7 @@ void Token::Print() {
 		printf("Operation: %s\n", value);
 	else
 	{
-		printf("[err]: Non printable: %s\n", value);
+		printf("[err]: Non printable: %s, %d\n", value, type);
 		assert(false);
 	}
 }
@@ -24,6 +24,7 @@ bool Token::IsOperation(int count, ...) {
 		return (type > OperationMin && type < OperationMax);
 	printf("NOT IMPLEMENTED!!!");
 	assert(false);
+	return false;
 }
 
 bool Token::IsConstant() {
@@ -44,6 +45,7 @@ Token Scanner::CreateToken(const char* ptr, int count, Token::EType type) {
 	Token token;
 	token.value = new char[count+1];
 	strncpy(token.value, ptr, count); // копируем count символов из строки ptr
+	token.value[count] = '\0';
 	token.type = type;
 	tokens.Push(token.value);
 	return token;
@@ -105,19 +107,18 @@ Token Scanner::GetToken() {
 				return CreateToken("", 0, Token::Empty);
 			case 'l': // may be 'log' or 'log10'
 				++pCurrent;
-				if(*(pCurrent++) == 'l')
-					if(*(pCurrent++) == 'o')
-						if(*(pCurrent++) == 'g')
+				if(*(pCurrent++) == 'o')
+					if(*(pCurrent++) == 'g')
+					{
+						if(*(pCurrent++) == '1')
 						{
-							if(*(pCurrent++) == '1')
-							{
-								if(*(pCurrent++) == '0')
-									return CreateToken("log10", 5, Token::Function);
-								return CreateToken("", 0, Token::Empty);
-							}
-							else
-								return CreateToken("log", 3, Token::Function);
+							if(*(pCurrent++) == '0')
+								return CreateToken("log10", 5, Token::Function);
+							return CreateToken("", 0, Token::Empty);
 						}
+						else
+							return CreateToken("log", 3, Token::Function);
+					}
 				return CreateToken("", 0, Token::Empty);
 			case 't': // may be 'tan' or 'tg'
 				++pCurrent;
@@ -176,7 +177,13 @@ parseAfterDot:
 
 Node::Node(Node::EType type): type(type) {}
 
-Parser::Parser(const char* expr): Scanner(expr) {}
+Parser::Parser(const char* expr): Scanner(expr) {
+	root = nullptr;
+}
+
+Parser::~Parser() {
+	DeleteChild(root);
+}
 
 Node* Parser::ParseAdditive() {
 	Node* pLeft = ParseMultiplicative();
@@ -272,7 +279,7 @@ Node* Parser::ParsePrimary() {
 
 Node* Parser::Parse() {
 	token = GetToken();
-	Node* root = ParseAdditive();
+	root = ParseAdditive();
 	return root;
 }
 
@@ -302,11 +309,19 @@ void Node::Print(int depth) {
 	}
 }
 
+void DeleteChild(Node* node) {
+	if (node->pLeft)
+		DeleteChild(node->pLeft);
+	if (node->pRight)
+		DeleteChild(node->pRight);
+	delete node;
+}
+
 T Calculate(Node* node, T firstVar) {
 	if(node->type == Node::Primary)
 	{
 		if(node->token.type == Token::Number)
-			return atoi(node->token.value);
+			return atof(node->token.value);
 		if(node->token.type == Token::Variable)
 			return firstVar;
 		if(node->token.type == Token::Constant)
@@ -363,23 +378,35 @@ T Calculate(Node* node, T firstVar) {
 	}
 	printf("[err]: Unknown node: %s\n", node->token.value);
 	assert(false);
+	return false;
+}
+
+void PrintTree(Node* node, T firstVar, int depth = 0) {
+	if (node->pLeft)
+		PrintTree(node->pLeft, firstVar, depth + 1);
+	printf("\n");
+	for (int i = 0; i < depth; i++)
+		printf("\t");
+	printf("%s\n", node->token.value);
+	if (node->pRight)
+		PrintTree(node->pRight, firstVar, depth + 1);
 }
 
 void CalculatePrint(Node* node, T firstVar) {
 	if(node->type == Node::Primary)
 	{
-		printf(" %s ", node->token.value);
+		printf("%s", node->token.value);
 		return;
 	}
-	else if(node->type == Node::Unary)
+	if(node->type == Node::Unary)
 	{
-		printf(" %s ", node->token.value);
-		printf("[");
+		printf(" %s", node->token.value);
+		printf("(");
 		CalculatePrint(node->pLeft, firstVar);
-		printf("]");
+		printf(")");
 		return;
 	}
-	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+	if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
 	{
 		printf("[");
 		CalculatePrint(node->pLeft, firstVar);
@@ -393,3 +420,4 @@ void CalculatePrint(Node* node, T firstVar) {
 	printf("[err]: Unknown node: %s\n", node->token.value);
 	assert(false);
 }
+
