@@ -1,36 +1,26 @@
 #include"Integral.h"
 #include "Mathfunctions.h"
 
-Integ::Integ() :_a(0.0), _b(0.0) {
+IntegCreate(Integ* integ) :_a(0.0), _b(0.0) {
 	_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
-Integ::Integ(T a, T b) : _a(a), _b(b) {
+IntegCreate(Integ* integ, T a, T b) : _a(a), _b(b) {
 	_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
-Integ::~Integ() {
-	free(_func);
+IntegDelete(Integ* integ) {
+	free(integ->_func);
 }
 
-void Integ::Seta(T a) {
-	_a = a;
-}
-void Integ::Setb(T b) {
-	_b = b;
-}
-void Integ::SetFunc(const char* func) {
-	strcpy(_func, func);
-}
-
-T Integ::Geta() {
-	return _a;
-}
-T Integ::Getb() {
-	return _b;
+void SetFunc(Integ* integ, const char* func) {
+	strcpy(integ->_func, func);
 }
 
 
+
+//PrintIntegral and InputIntegral
+/*
 ostream& operator <<(ostream& stream, const Integ& ob1) {
 	stream << "интегрируемая функция: " << ob1._func << " начало отрезка:  " << ob1._a << " конец отрезка: " << ob1._b << endl;
 	return stream;
@@ -39,6 +29,8 @@ istream& operator >>(istream& stream, Integ& ob1) {
 	stream >> ob1._func >> ob1._a >> ob1._b;
 	return stream;
 }
+*/
+
 /*#pragma intrinsic(log)
 #pragma intrinsic(log10)
 #pragma intrinsic(tan)
@@ -62,7 +54,7 @@ inline void ECfree(char* pointer) {
 
 // разбираем строку формата:  функция(коэффицент*x+константа) -- нового образца
 
-T Integ::ParseExprOld(const char* expr) {
+T Integ::ParseExprOld(Integ* integ, const char* expr) {
 	const static char* sep1 = "+-";
 	const static char* sep2 = "*/";
 	const static char* sep3 = "^";
@@ -132,7 +124,7 @@ doOperation:
 	return op(ParseExprOld(leftS), ParseExprOld(rightS));
 }
 
-T Integ::ResultNew(int* progress, long long presition) {
+T ResultNew(Integ* integ, int* progress, long long presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
@@ -183,7 +175,7 @@ T Integ::ResultNew(int* progress, long long presition) {
 }
 
 // разбираем строку формата:  функция(коэффицент*x+константа)
-T Integ::ResultOld(int* progress, long long presition) {
+T IntegResultOld(Integ* integ, int* progress, long long presition) {
 	T absS;
 	absS = abs(_b - _a);
 	T Square(0, 0);
@@ -261,9 +253,9 @@ T Integ::ResultOld(int* progress, long long presition) {
 	return Square;
 };
 
-T fun(Integ& ob1, int* progress, int parserVersion, long long presition)
+T fun(Integ* ob1, int* progress, int parserVersion, long long presition)
 {
 	if(!parserVersion)
-		return ob1.ResultOld(progress, presition);
-	return ob1.ResultNew(progress, presition);
+		return IntegResultOld(ob1, progress, presition);
+	return IntegResultNew(ob1, progress, presition);
 }

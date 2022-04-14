@@ -24,7 +24,6 @@ IntegCreate(Integ* integ);
 IntegCreate(Integ* integ, T, T);
 IntegDelete(Integ* integ);
 
-void IntegSetFunc(const char*);
 
 T IntegResultOld(Integ* integ, int* progress, long long prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
 T IntegParseExprOld(Integ* integ, const char*);
