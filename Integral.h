@@ -1,10 +1,7 @@
 #pragma once
 #include "Definitions.h"
-#include<cstdlib>
-#include <iostream>
-#include<iomanip>
-#include <cstring>
-#include <fstream>
+#include<stdlib.h>
+#include <string.h>
 #include "ParserNew.h"
 
 //#include<complex.h>

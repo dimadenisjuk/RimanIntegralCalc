@@ -381,7 +381,7 @@ T Calculate(Node* node, T firstVar) {
 	return false;
 }
 
-void PrintTree(Node* node, T firstVar, int depth = 0) {
+void PrintTree(Node* node, T firstVar, int depth) {
 	if (node->pLeft)
 		PrintTree(node->pLeft, firstVar, depth + 1);
 	printf("\n");

@@ -33,9 +33,8 @@
 #define PARSER_OLD 0
 #define PARSER_NEW 1
 
-#include<ccomplex>
-using namespace std;
-typedef complex<double> T;
+#include<complex.h>
+#define T double complex
 //typedef double T;
 
 #endif //DEFINITIONS_H

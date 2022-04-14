@@ -75,9 +75,9 @@ inline T myDiv(const T num, const T x) {
 }
 
 inline T myPow(const T x, const T num) {
-//	if((int)(num.real()) == num.real())
-//		return pow(x.real(), num.real()); // pow(double, double)
-	return pow(x, num.real()); // pow(complex<double>, double)
+	if((int)(creal(num)) == creal(num))
+		return pow(creal(x), creal(num)); // pow(double, double)
+	return pow(x, creal(num)); // pow(complex<double>, double)
 }
 
 #endif //MATHFUNCTIONS_H
