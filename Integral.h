@@ -5,7 +5,6 @@
 #include "ParserNew.h"
 
 //#include<complex.h>
-using namespace std;
 
 #ifndef _countof
 #define _countof(x) sizeof(x)/sizeof(x[0])
@@ -13,40 +12,23 @@ using namespace std;
 
 #define MAX_INPUT_LENGTH 100
 
-class Integ {
+typedef struct {
 	T _a;
 	T _b;
 	char * _func;
 	T i;
 	T E;
-public:
-	Integ();
-	Integ(T, T);
-	~Integ();
+} Integ;
 
-	void Seta(T);
-	void Setb(T);
-	void SetFunc(const char*);
+IntegCreate(Integ* integ);
+IntegCreate(Integ* integ, T, T);
+IntegDelete(Integ* integ);
 
-	T Geta();
-	T Getb();
+void IntegSetFunc(const char*);
 
-	friend ostream& operator <<(ostream& stream, const Integ& ob1);
-	friend istream& operator >>(istream& stream, Integ& ob2);
+T IntegResultOld(Integ* integ, int* progress, long long prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
+T IntegParseExprOld(Integ* integ, const char*);
 
-	T ResultOld(int* progress, long long prestion); // аргумент -- для обратной связи (возвращает прогресс вычислений в процентах)
-	T ParseExprOld(const char*);
+T IntegResultNew(Integ* integ, int* progress, long long presition);
 
-	T ResultNew(int* progress, long long presition);
-};
-/*
-class MyException {
-	T num1;
-	T num2;
-public:
-	MyException();
-	MyException(Integ ob1);
-	void printMessage();
-};*/
-
-T fun(Integ& ob1, int* progress, int parserVersion=1, long long presition=PRESITION_M);
+T fun(Integ* ob1, int* progress, int parserVersion=1, long long presition=PRESITION_M);
