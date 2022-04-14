@@ -154,16 +154,16 @@ T Integ::ResultNew(int* progress, long long presition) {
 	// заполняем файл с данными для GNUPlot
 	outFile.open("graph", ios::trunc);
 	double progressExact = 0;
-	while (i.real() < n.real())
+	while (creal(i) < creal(n))
 	{
 		value = Calculate(root, E*i + _a);
 		Square += E * value;
-		if(value.imag()!=0)
+		if(cimag(value)!=0)
 			complexResult = true;
-		if((int)i.real() % 500 == 0)
-			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
+		if((int)creal(i) % 500 == 0)
+			outFile << creal(E*i + _a) << " " << cimag(value) << " " << creal(value) << endl;
 		i += T(1, 0);
-		progressExact = 100 * i.real() / (n.real() - 3);
+		progressExact = 100 * creal(i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
 			printf("\r%s %d%%", Strings[IStrCalculating].M_LANG, (int)progressExact);
@@ -233,16 +233,16 @@ T Integ::ResultOld(int* progress, long long presition) {
 	// заполняем файл с данными для GNUPlot
 	outFile.open("graph", ios::trunc);
 	double progressExact = 0;
-	while (i.real() < n.real())
+	while (creal(i) < creal(n))
 	{
 		value = functions[j].pfUnaryOperation(ParseExprOld(token));
 		Square += E * value;
-		if(value.imag()!=0)
+		if(cimag(value)!=0)
 			complexResult = true;
-		if((int)i.real() % 500 == 0)
-			outFile << (E*i + _a).real() << " " << value.imag() << " " << value.real() << endl;
+		if((int)creal(i) % 500 == 0)
+			outFile << creal(E*i + _a) << " " << cimag(value) << " " << creal(value) << endl;
 		i += T(1, 0);
-		progressExact = 100 * i.real() / (n.real() - 3);
+		progressExact = 100 * creal(i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
 			cout << "\r" << Strings[IStrCalculating].M_LANG << (int)progressExact << "%";
