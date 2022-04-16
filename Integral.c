@@ -1,12 +1,16 @@
 #include"Integral.h"
 #include "Mathfunctions.h"
 
-IntegCreate(Integ* integ) :_a(0.0), _b(0.0) {
-	_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
+IntegCreate(Integ* integ) {
+	integ->_a = 0.0 + 0.0 * I;
+	integ->_b = 0.0 + 0.0 * I;
+	integ->_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
-IntegCreate(Integ* integ, T a, T b) : _a(a), _b(b) {
-	_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
+IntegCreate(Integ* integ, T a, T b) {
+	integ->_a = a;
+	integ->_b = b;
+	integ->_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
 IntegDelete(Integ* integ) {
@@ -54,7 +58,7 @@ inline void ECfree(char* pointer) {
 
 // разбираем строку формата:  функция(коэффицент*x+константа) -- нового образца
 
-T Integ::ParseExprOld(Integ* integ, const char* expr) {
+T IntegParseExprOld(Integ* integ, const char* expr) {
 	const static char* sep1 = "+-";
 	const static char* sep2 = "*/";
 	const static char* sep3 = "^";
@@ -111,7 +115,7 @@ stage4:
 	ECfree(expr2);
 
 	if (expr[0] == 'x')
-		return E * i + _a;
+		return E * integ->i + integ->_a;
 	return atof(expr);
 
 doOperation:
@@ -121,21 +125,21 @@ doOperation:
 	strcpy(rightS, right);
 
 	ECfree(expr2);
-	return op(ParseExprOld(leftS), ParseExprOld(rightS));
+	return op(IntegParseExprOld(integ, leftS), IntegParseExprOld(integ, rightS));
 }
 
-T ResultNew(Integ* integ, int* progress, long long presition) {
+T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	T absS;
-	absS = abs(_b - _a);
-	T Square(0, 0);
+	absS = abs(integ->_b - integ->_a);
+	T Square = 0 + 0*I;
 	i = 1;
 	T n = presition + 3;
 	E = absS / n;
 	
 	T value;
 	
-	Parser prs(_func);
-	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
+//	Parser prs(integ->_func);
+//	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	
 	printf("%s\n", Strings[IStrUnderstoodLike].M_LANG);
 	CalculatePrint(root, 0);  //Вывод разобранного выражения
@@ -148,13 +152,13 @@ T ResultNew(Integ* integ, int* progress, long long presition) {
 	double progressExact = 0;
 	while (creal(i) < creal(n))
 	{
-		value = Calculate(root, E*i + _a);
+//		value = Calculate(root, E*i + integ->_a);
 		Square += E * value;
 		if(cimag(value)!=0)
 			complexResult = true;
 		if((int)creal(i) % 500 == 0)
-			outFile << creal(E*i + _a) << " " << cimag(value) << " " << creal(value) << endl;
-		i += T(1, 0);
+			outFile << creal(E*i + integ->_a) << " " << cimag(value) << " " << creal(value) << endl;
+		i += 1 + 0*I;
 		progressExact = 100 * creal(i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
@@ -167,9 +171,9 @@ T ResultNew(Integ* integ, int* progress, long long presition) {
 	// заполняем файл с командами для GNUPlot
 	outFile.open("graphP", ios::trunc);
 	if(complexResult)
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with impulses" << endl;
+		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "splot \"graph\" with impulses" << endl;
 	else
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
+		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
 	outFile.close();
 	return Square;
 }
@@ -177,11 +181,11 @@ T ResultNew(Integ* integ, int* progress, long long presition) {
 // разбираем строку формата:  функция(коэффицент*x+константа)
 T IntegResultOld(Integ* integ, int* progress, long long presition) {
 	T absS;
-	absS = abs(_b - _a);
-	T Square(0, 0);
-	i = 1;
+	absS = abs(integ->_b - integ->_a);
+	T Square = 0 + 0*I;
+	integ->i = 1;
 	T n = presition + 3;
-	E = absS / n;
+	integ->E = absS / n;
 
 	const static struct {
 		const char* opcode;
@@ -202,7 +206,7 @@ T IntegResultOld(Integ* integ, int* progress, long long presition) {
 		{"exp", myExp},
 		{"const", myConst},
 	};
-	char* strFunc = strdup(_func); // продублировали строку
+	char* strFunc = strdup(integ->_func); // продублировали строку
 	const char separators[] = "()"; // массив разделителей
 	char* token = strtok(strFunc, separators); // откусили название операции
 	bool complexResult = false;
@@ -227,13 +231,13 @@ T IntegResultOld(Integ* integ, int* progress, long long presition) {
 	double progressExact = 0;
 	while (creal(i) < creal(n))
 	{
-		value = functions[j].pfUnaryOperation(ParseExprOld(token));
+		value = functions[j].pfUnaryOperation(IntegParseExprOld(integ, token));
 		Square += E * value;
 		if(cimag(value)!=0)
 			complexResult = true;
-		if((int)creal(i) % 500 == 0)
-			outFile << creal(E*i + _a) << " " << cimag(value) << " " << creal(value) << endl;
-		i += T(1, 0);
+		if((int)creal(integ->i) % 500 == 0)
+			outFile << creal(integ->E*integ->i + integ->_a) << " " << cimag(value) << " " << creal(value) << endl;
+		integ->i += 1 + 0 * I;
 		progressExact = 100 * creal(i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
@@ -246,9 +250,9 @@ T IntegResultOld(Integ* integ, int* progress, long long presition) {
 	// заполняем файл с командами для GNUPlot
 	outFile.open("graphP", ios::trunc);
 	if(complexResult)
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "splot \"graph\" with impulses" << endl;
+		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "splot \"graph\" with impulses" << endl;
 	else
-		outFile << "set grid" << endl << "set title \"" << _func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
+		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
 	outFile.close();
 	return Square;
 };

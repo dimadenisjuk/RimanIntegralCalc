@@ -33,6 +33,7 @@
 #define PARSER_OLD 0
 #define PARSER_NEW 1
 
+#include<stdbool.h>
 #include<complex.h>
 #define T double complex
 //typedef double T;
