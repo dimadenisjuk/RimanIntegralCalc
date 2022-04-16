@@ -1,19 +1,19 @@
 #include"Integral.h"
 #include "Mathfunctions.h"
 
-IntegCreate(Integ* integ) {
+void IndefIntegCreate(Integ* integ) {
 	integ->_a = 0.0 + 0.0 * I;
 	integ->_b = 0.0 + 0.0 * I;
 	integ->_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
-IntegCreate(Integ* integ, T a, T b) {
+void DefIntegCreate(Integ* integ, T a, T b) {
 	integ->_a = a;
 	integ->_b = b;
 	integ->_func = (char*)calloc(MAX_INPUT_LENGTH, sizeof(char)); // выделяет динамическую память и инициализирует нулями
 }
 
-IntegDelete(Integ* integ) {
+void IntegDelete(Integ* integ) {
 	free(integ->_func);
 }
 
@@ -51,8 +51,8 @@ istream& operator >>(istream& stream, Integ& ob1) {
 
 
 
-inline void ECfree(char* pointer) {
-	if (pointer != nullptr)
+inline static void ECfree(char* pointer) {
+	if (pointer != NULL)
 		free(pointer);
 }
 
@@ -115,7 +115,7 @@ stage4:
 	ECfree(expr2);
 
 	if (expr[0] == 'x')
-		return E * integ->i + integ->_a;
+		return integ->E * integ->i + integ->_a;
 	return atof(expr);
 
 doOperation:
@@ -132,9 +132,9 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	T absS;
 	absS = abs(integ->_b - integ->_a);
 	T Square = 0 + 0*I;
-	i = 1;
+	integ->i = 1;
 	T n = presition + 3;
-	E = absS / n;
+	integ->E = absS / n;
 	
 	T value;
 	
@@ -142,39 +142,45 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 //	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
 	
 	printf("%s\n", Strings[IStrUnderstoodLike].M_LANG);
-	CalculatePrint(root, 0);  //Вывод разобранного выражения
+//	CalculatePrint(root, 0);  //Вывод разобранного выражения
 	printf("\n");
 
 	bool complexResult = false;
-	ofstream outFile;
+	int outFile;
 	// заполняем файл с данными для GNUPlot
-	outFile.open("graph", ios::trunc);
+	outFile = open("graph", O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
 	double progressExact = 0;
-	while (creal(i) < creal(n))
+	char* fileBuffer = calloc(1000, sizeof(char));
+	while (creal(integ->i) < creal(n))
 	{
-//		value = Calculate(root, E*i + integ->_a);
-		Square += E * value;
+//		value = Calculate(root, integ->E*i + integ->_a);
+		Square += integ->E * value;
 		if(cimag(value)!=0)
 			complexResult = true;
-		if((int)creal(i) % 500 == 0)
-			outFile << creal(E*i + integ->_a) << " " << cimag(value) << " " << creal(value) << endl;
-		i += 1 + 0*I;
-		progressExact = 100 * creal(i) / (creal(n) - 3);
+		if((int)creal(integ->i) % 500 == 0)
+		{
+			sprintf(fileBuffer, "%lf %lf %lf\n", creal(integ->E*integ->i + integ->_a), cimag(value), creal(value));
+			write(outFile, fileBuffer, strlen(fileBuffer));
+		}
+		integ->i += 1 + 0*I;
+		progressExact = 100 * creal(integ->i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
 			printf("\r%s %d%%", Strings[IStrCalculating].M_LANG, (int)progressExact);
-			cout.flush(); // мгновенная печать потока cout
+			//cout.flush(); // мгновенная печать потока cout
 			*progress = (int)(progressExact);
 		}
 	}
-	outFile.close();
+	close(outFile);
 	// заполняем файл с командами для GNUPlot
-	outFile.open("graphP", ios::trunc);
+	outFile = open("graphP", O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
 	if(complexResult)
-		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "splot \"graph\" with impulses" << endl;
+		sprintf(fileBuffer, "set grid\nset title \"%s\"\nsplot \"graph\" with impulses\n", integ->_func);
 	else
-		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
-	outFile.close();
+		sprintf(fileBuffer, "set grid\nset title \"\"\nplot \"graph\" using 1:3 with boxes\n", integ->_func);
+	write(outFile, fileBuffer, strlen(fileBuffer));
+	close(outFile);
+	free(fileBuffer);
 	return Square;
 }
 
@@ -220,40 +226,46 @@ T IntegResultOld(Integ* integ, int* progress, long long presition) {
 	}
 	if (j == _countof(functions))
 	{
-		cout << Strings[IStrIllegalFunc].M_LANG << endl;
+		printf("%s\n", Strings[IStrIllegalFunc].M_LANG);
 		return 0;
 	}
 	T value;
 	token = strtok(NULL, separators); // откусили аргумент функции
-	ofstream outFile;
+	int outFile;
 	// заполняем файл с данными для GNUPlot
-	outFile.open("graph", ios::trunc);
+	outFile = open("graph", O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
 	double progressExact = 0;
-	while (creal(i) < creal(n))
+	char* fileBuffer = calloc(1000, sizeof(char));
+	while (creal(integ->i) < creal(n))
 	{
 		value = functions[j].pfUnaryOperation(IntegParseExprOld(integ, token));
-		Square += E * value;
+		Square += integ->E * value;
 		if(cimag(value)!=0)
 			complexResult = true;
 		if((int)creal(integ->i) % 500 == 0)
-			outFile << creal(integ->E*integ->i + integ->_a) << " " << cimag(value) << " " << creal(value) << endl;
+		{
+			sprintf(fileBuffer, "%lf %lf %lf\n", creal(integ->E*integ->i + integ->_a), cimag(value), creal(value));
+			write(outFile, fileBuffer, strlen(fileBuffer));
+		}
 		integ->i += 1 + 0 * I;
-		progressExact = 100 * creal(i) / (creal(n) - 3);
+		progressExact = 100 * creal(integ->i) / (creal(n) - 3);
 		if(((int)(progressExact) % 5 == 0) && ((int)(progressExact) == progressExact))
 		{
-			cout << "\r" << Strings[IStrCalculating].M_LANG << (int)progressExact << "%";
-			cout.flush(); // мгновенная печать потока cout
+			printf("\r%s%d%%", Strings[IStrCalculating].M_LANG, (int)progressExact);
+			//cout.flush(); // мгновенная печать потока cout
 			*progress = (int)(progressExact);
 		}
 	}
-	outFile.close();
+	close(outFile);
 	// заполняем файл с командами для GNUPlot
-	outFile.open("graphP", ios::trunc);
+	outFile = open("graphP", O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
 	if(complexResult)
-		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "splot \"graph\" with impulses" << endl;
+		sprintf(fileBuffer, "set grid\nset title \"%s\"\nsplot \"graph\" with impulses\n", integ->_func);
 	else
-		outFile << "set grid" << endl << "set title \"" << integ->_func << "\"" << endl << "plot \"graph\" using 1:3 with boxes" << endl;
-	outFile.close();
+		sprintf(fileBuffer, "set grid\nset title \"\"\nplot \"graph\" using 1:3 with boxes\n", integ->_func);
+	write(outFile, fileBuffer, strlen(fileBuffer));
+	close(outFile);
+	free(fileBuffer);
 	return Square;
 };
 
@@ -263,3 +275,4 @@ T fun(Integ* ob1, int* progress, int parserVersion, long long presition)
 		return IntegResultOld(ob1, progress, presition);
 	return IntegResultNew(ob1, progress, presition);
 }
+

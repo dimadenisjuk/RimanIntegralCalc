@@ -4,80 +4,78 @@
 #include "Definitions.h"
 #include <math.h>
 
-const static T tmpEd = 1;
-
-inline T myLog(const T x) {
-	return log(x);
+inline static T myLog(const T x) {
+	return clog(x);
 }
 
-inline T myLog10(const T x) {
-	return log10(x);
+inline static T myLog10(const T x) {
+	return clog(x)/clog(10);
 }
 
-inline T myCot(const T x) {
-	return tmpEd / tan(x);
+inline static T myCot(const T x) {
+	return (1+0*I) / ctan(x);
 }
 
-inline T myAcot(const T x) {
-	return tmpEd / atan(x);
+inline static T myAcot(const T x) {
+	return (1+0*I) / catan(x);
 }
 
-inline T mySin(const T x) {
-	return sin(x);
+inline static T mySin(const T x) {
+	return csin(x);
 }
 
-inline T myCos(const T x) {
-	return cos(x);
+inline static T myCos(const T x) {
+	return ccos(x);
 }
 
-inline T myTan(const T x) {
-	return tan(x);
+inline static T myTan(const T x) {
+	return ctan(x);
 }
 
-inline T myAcos(const T x) {
-	return acos(x);
+inline static T myAcos(const T x) {
+	return cacos(x);
 }
 
-inline T myAsin(const T x) {
-	return asin(x);
+inline static T myAsin(const T x) {
+	return casin(x);
 }
 
-inline T myAtan(const T x) {
-	return atan(x);
+inline static T myAtan(const T x) {
+	return catan(x);
 }
 
-inline T myExp(const T x) {
-	return exp(x);
+inline static T myExp(const T x) {
+	return cexp(x);
 }
 
-inline T myConst(const T x) {
+inline static T myConst(const T x) {
 	return x;
 }
 
-inline T myTanh(const T x) {
-	return tanh(x);
+inline static T myTanh(const T x) {
+	return ctanh(x);
 }
 
-inline T myAdd(const T num, const T x) {
+inline static T myAdd(const T num, const T x) {
 	return num + x;
 }
 
-inline T mySub(const T num, const T x) {
+inline static T mySub(const T num, const T x) {
 	return num - x;
 }
 
-inline T myMul(const T num, const T x) {
+inline static T myMul(const T num, const T x) {
 	return num * x;
 }
 
-inline T myDiv(const T num, const T x) {
+inline static T myDiv(const T num, const T x) {
 	return num / x;
 }
 
-inline T myPow(const T x, const T num) {
+inline static T myPow(const T x, const T num) {
 	if((int)(creal(num)) == creal(num))
 		return pow(creal(x), creal(num)); // pow(double, double)
-	return pow(x, creal(num)); // pow(complex<double>, double)
+	return cpow(x, creal(num)); // pow(complex<double>, double)
 }
 
 #endif //MATHFUNCTIONS_H
