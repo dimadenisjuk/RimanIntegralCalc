@@ -138,8 +138,9 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	
 	T value;
 	
-//	Parser prs(integ->_func);
-//	Node* root = prs.Parse(); //Получаем корневой узел дерева вычислений
+//	Parser prs;
+//	CreateParser(integ->_func);
+//	Node* root = ParseExpr(); //Получаем корневой узел дерева вычислений
 	
 	printf("%s\n", Strings[IStrUnderstoodLike].M_LANG);
 //	CalculatePrint(root, 0);  //Вывод разобранного выражения

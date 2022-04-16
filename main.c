@@ -21,10 +21,12 @@ int main(int argc, char* argv[]) {
 	SetConsoleOutputCP(65001);
 #endif //windows
 	Integ ob1;
-	cout << Strings[IStrMainTip].M_LANG << endl;
-	cin >> ob1;
-	char* strPresition = new char[100];
-	cin >> strPresition;
+       	IndefIntegCreate(&ob1);
+	printf("%s\n", Strings[IStrMainTip].M_LANG);
+	scanf("%s%lf%lf", ob1._func, &ob1._a, &ob1._b);
+	char* strPresition = malloc(100*sizeof(char));
+	scanf("%s", strPresition);
+	printf("dsldfj");
 	long long presition;
 	if(!strcmp(strPresition, "LL"))
 		presition = PRESITION_LL;
@@ -39,9 +41,9 @@ int main(int argc, char* argv[]) {
 	if(!strcmp(strPresition, "FINE"))
 		presition = PRESITION_FINE;
 	int progress = 0;
-	T res = fun(ob1, &progress, PARSER_NEW, presition);
-	cout << Strings[IStrIntegValue].M_LANG << res << endl;
-	cout << Strings[IStrQuitGNUPlot].M_LANG << endl;
+	T res = fun(&ob1, &progress, PARSER_OLD, presition);
+	printf("%s(%lf;%lf)\n", Strings[IStrIntegValue].M_LANG, creal(res), cimag(res));
+	printf("%s\n", Strings[IStrQuitGNUPlot].M_LANG);
 	system(GNUPLOT);
 	return 0;
 #endif //USE_QT6
