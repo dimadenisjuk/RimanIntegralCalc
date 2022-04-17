@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	if(!strcmp(strPresition, "FINE"))
 		presition = PRESITION_FINE;
 	int progress = 0;
-	T res = fun(&ob1, &progress, PARSER_OLD, presition);
+	T res = fun(&ob1, &progress, PARSER_NEW, presition);
 	printf("%s(%lf;%lf)\n", Strings[IStrIntegValue].M_LANG, creal(res), cimag(res));
 	printf("%s\n", Strings[IStrQuitGNUPlot].M_LANG);
 	system(GNUPLOT);

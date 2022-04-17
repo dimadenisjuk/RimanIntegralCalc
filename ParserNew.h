@@ -9,78 +9,76 @@
 #include <assert.h>
 #include <stdio.h>
 
-class Token {
-public:
-	enum EType {
-		Unknown, // Для начальной инициализаци
-		DataMin,
-			Constant, // Константа (предустановленная)
-			Number, // Константа (заданная пользователем)
-			Variable, // Переменная
-		DataMax,
-		OperationMin,
-			Addition,
-			Subtraction,
-			Multiplication,
-			Division,
-			Power,
-			Left,
-			Right,
-			Function,
-		OperationMax,
-		Empty // Последняя лексема в лексической свёртке
+typedef struct {
+	enum ETokenType {
+		TokenUnknown, // Для начальной инициализаци
+		TokenDataMin,
+			TokenConstant, // Константа (предустановленная)
+			TokenNumber, // Константа (заданная пользователем)
+			TokenVariable, // Переменная
+		TokenDataMax,
+		TokenOperationMin,
+			TokenAddition,
+			TokenSubtraction,
+			TokenMultiplication,
+			TokenDivision,
+			TokenPower,
+			TokenLeft,
+			TokenRight,
+			TokenFunction,
+		TokenOperationMax,
+		TokenEmpty // Последняя лексема в лексической свёртке
 	} type;
 	char* value;
-	Token();
-	void Print();
-	bool IsOperation(int count, ...);
-	bool IsConstant();
-};
+} Token;
+void InitToken(Token* token);
+void PrintToken(Token* token);
+bool TokenIsOperation(Token* token, int count, ...);
+bool TokenIsConstant(Token* token);
 
-class Scanner {
+typedef struct {
 	const char* pCurrent;
-	Stack<char*> tokens;
-public:
-	Scanner(const char* expr);
+	//Stack<char*> tokens;
+	Stack tokens;
 
-~Scanner();
-	Token CreateToken(const char* ptr, int count, Token::EType type); // %.*s, count, ptr
-	Token GetToken();
-};
+} Scanner;
+void CreateScanner(Scanner* scn, const char* expr);
+void DeleteScanner(Scanner* scn);
+Token CreateToken(Scanner* scn, const char* ptr, int count, ETokenType type); // %.*s, count, ptr
+Token GetToken(Scanner* scn);
 
-class Node {
-public:
-	enum EType {
-		Expression,
-		Additive, // Выражение вида "a (+|-) b"
-		Multiplicative, // Выражение вида "a (*|/) b"
-		Power, // Выражение вида "a ^ b"
-		Unary, // Унарное выражение вида "sin a"
-		Primary // Конечное выражение вида "a"
+typedef struct {
+	enum ENodeType {
+		NodeExpression,
+		NodeAdditive, // Выражение вида "a (+|-) b"
+		NodeMultiplicative, // Выражение вида "a (*|/) b"
+		NodePower, // Выражение вида "a ^ b"
+		NodeUnary, // Унарное выражение вида "sin a"
+		NodePrimary // Конечное выражение вида "a"
 	} type;
-	Node(EType type);
 	Node *pLeft, *pRight; // Дочерние узлы
 	Token token; // Операция над ними
-	void Print(int depth = 0);
-};
+} Node;
+Node* CreateNode(Node* node, ENodeType type);
+void PrintNode(Node* node, int depth);
 
-class Parser : Scanner {
-	Stack <Node*> nodes;
+typedef struct {
+	//Stack <Node*> nodes;
+	Stack tokens;
 	Token token;
-	Node* ParseAdditive();
-	Node* ParseMultiplicative();
-	Node* ParsePower();
-	Node* ParsePrimary();
 	Node* root;
-public:
-	Parser(const char* source);
-	Node* Parse();
-	~Parser();
-};
+} Parser;
+Node* ParseAdditive(Parser* prs);
+Node* ParseMultiplicative(Parser* prs);
+Node* ParsePower(Parser* prs);
+Node* ParsePrimary(Parser* prs);
+Node* Parse(Parser* prs);
+void CreateParser(Parser* prs, const char* source);
+void DeleteParser(Parser* prs);
 
 void DeleteChild(Node* node);
 T Calculate(Node* node, T firstVar); // Подсчёт значения выражения
 void CalculatePrint(Node* node, T firstVar); // Печать вычисляемого выражения
-void PrintTree(Node* node, T firstVar, int depth = 0); // Печать вычисляемого выражения в виде дерева
+void PrintTree(Node* node, T firstVar, int depth); // Печать вычисляемого выражения в виде дерева
 
 #endif //PARSERNEW_H

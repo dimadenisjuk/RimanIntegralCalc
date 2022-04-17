@@ -138,12 +138,12 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	
 	T value;
 	
-//	Parser prs;
-//	CreateParser(integ->_func);
-//	Node* root = ParseExpr(); //Получаем корневой узел дерева вычислений
+	Parser prs;
+	CreateParser(&prs, integ->_func);
+	Node* root = ParseExpr(); //Получаем корневой узел дерева вычислений
 	
 	printf("%s\n", Strings[IStrUnderstoodLike].M_LANG);
-//	CalculatePrint(root, 0);  //Вывод разобранного выражения
+	CalculatePrint(root, 0);  //Вывод разобранного выражения
 	printf("\n");
 
 	bool complexResult = false;
@@ -154,7 +154,7 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	char* fileBuffer = calloc(1000, sizeof(char));
 	while (creal(integ->i) < creal(n))
 	{
-//		value = Calculate(root, integ->E*i + integ->_a);
+		value = Calculate(root, integ->E*integ->i + integ->_a);
 		Square += integ->E * value;
 		if(cimag(value)!=0)
 			complexResult = true;

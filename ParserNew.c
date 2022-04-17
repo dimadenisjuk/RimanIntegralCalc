@@ -2,48 +2,49 @@
 #include <ctype.h>
 
 
-Token::Token() {
-	type = Unknown;
-	value = nullptr;
+void InitToken(Token* token) {
+	token->type = TokenUnknown;
+	token->value = NULL;
 }
 
-void Token::Print() {
-	if(type > DataMin && type < DataMax)
-		printf("Data: %s\n", value);
-	else if(type > OperationMin && type < OperationMax)
-		printf("Operation: %s\n", value);
+void PrintToken(Token* token) {
+	if(token->type > TokenDataMin && token->type < TokenDataMax)
+		printf("Data: %s\n", token->value);
+	else if(token->type > TokenOperationMin && token->type < TokenOperationMax)
+		printf("Operation: %s\n", token->value);
 	else
 	{
-		printf("[err]: Non printable: %s, %d\n", value, type);
+		printf("[err]: Non printable: %s, %d\n", token->value, token->type);
 		assert(false);
 	}
 }
 
-bool Token::IsOperation(int count, ...) {
+bool TokenIsOperation(Token* token, int count, ...) {
 	if (count == 0)
-		return (type > OperationMin && type < OperationMax);
+		return (token->type > TokenOperationMin && token->type < TokenOperationMax);
 	printf("NOT IMPLEMENTED!!!");
 	assert(false);
 	return false;
 }
 
-bool Token::IsConstant() {
-	return (type == Constant);
+bool TokenIsConstant(Token* token) {
+	return (token->type == TokenConstant);
 }
 
-Scanner::Scanner(const char* expr) {
-	pCurrent = expr;
+void CreateScanner(Scanner* scn, const char* expr) {
+	scn->pCurrent = expr;
 }
 
-Scanner::~Scanner() {
-	while(!tokens.IsEmpty())
-		tokens.Pop();
+void DeleteScanner(Scanner* scn) {
+	while(!scn->tokens.IsEmpty())
+		scn->tokens.Pop();
 }
 
 
-Token Scanner::CreateToken(const char* ptr, int count, Token::EType type) {
+Token CreateToken(const char* ptr, int count, ETokenType type) {
 	Token token;
-	token.value = new char[count+1];
+	InitToken(token);
+	token.value = malloc((count+1) * sizeof(char));
 	strncpy(token.value, ptr, count); // копируем count символов из строки ptr
 	token.value[count] = '\0';
 	token.type = type;
@@ -51,260 +52,265 @@ Token Scanner::CreateToken(const char* ptr, int count, Token::EType type) {
 	return token;
 }
 
-Token Scanner::GetToken() {
+Token GetToken(Scanner* scn) {
 	while(true)
 	{
-		switch(*pCurrent)
+		switch(*scn->pCurrent)
 		{
 			// Прокуск пробелов
 			case ' ':
 			case '\t':
-				pCurrent++;
+				scn->pCurrent++;
 				continue;
 			case '+':
-				return CreateToken(pCurrent++, 1, Token::Addition);
+				return CreateToken(scn->pCurrent++, 1, TokenAddition);
 			case '-':
-				return CreateToken(pCurrent++, 1, Token::Subtraction);
+				return CreateToken(scn->pCurrent++, 1, TokenSubtraction);
 			case '*':
-				return CreateToken(pCurrent++, 1, Token::Multiplication);
+				return CreateToken(scn->pCurrent++, 1, TokenMultiplication);
 			case '/':
-				return CreateToken(pCurrent++, 1, Token::Division);
+				return CreateToken(scn->pCurrent++, 1, TokenDivision);
 			case '^':
-				return CreateToken(pCurrent++, 1, Token::Power);
+				return CreateToken(scn->pCurrent++, 1, TokenPower);
 			case '(':
-				return CreateToken(pCurrent++, 1, Token::Left);
+				return CreateToken(scn->pCurrent++, 1, TokenLeft);
 			case ')':
-				return CreateToken(pCurrent++, 1, Token::Right);
+				return CreateToken(scn->pCurrent++, 1, TokenRight);
 			case 'x':
-				return CreateToken(pCurrent++, 1, Token::Variable);
+				return CreateToken(scn->pCurrent++, 1, TokenVariable);
 			case 'c': // may be 'cos' or 'cot'
-				++pCurrent;
-				if(*(pCurrent++) == 'o')
+				++scn->pCurrent;
+				if(*(scn->pCurrent++) == 'o')
 				{
-					if(*(pCurrent++) == 's')
-						return CreateToken("cos", 3, Token::Function);
-					if(*(pCurrent++) == 't')
-						return CreateToken("cot", 3, Token::Function);
+					if(*(scn->pCurrent++) == 's')
+						return CreateToken("cos", 3, TokenFunction);
+					if(*(scn->pCurrent++) == 't')
+						return CreateToken("cot", 3, TokenFunction);
 				}
-				return CreateToken("", 0, Token::Empty);
+				return CreateToken("", 0, TokenEmpty);
 			case 'e': // may be 'exp'
-				++pCurrent;
-				if((*pCurrent++) == 'e')
-					if(*(pCurrent++) == 'x')
-						if(*(pCurrent++) == 'p')
-							return CreateToken("exp", 3, Token::Function);
-				return CreateToken("", 0, Token::Empty);
+				++scn->pCurrent;
+				if((*scn->pCurrent++) == 'e')
+					if(*(scn->pCurrent++) == 'x')
+						if(*(scn->pCurrent++) == 'p')
+							return CreateToken("exp", 3, TokenFunction);
+				return CreateToken("", 0, TokenEmpty);
 			case 'p': // may be 'pi'
-				++pCurrent;
-				if(*(pCurrent++) == 'i')
-					return CreateToken("pi", 2, Token::Constant);
-				return CreateToken("", 0, Token::Empty);
+				++scn->pCurrent;
+				if(*(scn->pCurrent++) == 'i')
+					return CreateToken("pi", 2, TokenConstant);
+				return CreateToken("", 0, TokenEmpty);
 			case 's': // may be 'sin'
-				++pCurrent;
-				if(*(pCurrent++) == 'i')
-					if(*(pCurrent++) == 'n')
-						return CreateToken("sin", 3, Token::Function);
-				return CreateToken("", 0, Token::Empty);
+				++scn->pCurrent;
+				if(*(scn->pCurrent++) == 'i')
+					if(*(scn->pCurrent++) == 'n')
+						return CreateToken("sin", 3, TokenFunction);
+				return CreateToken("", 0, TokenEmpty);
 			case 'l': // may be 'log' or 'log10'
-				++pCurrent;
-				if(*(pCurrent++) == 'o')
-					if(*(pCurrent++) == 'g')
+				++scn->pCurrent;
+				if(*(scn->pCurrent++) == 'o')
+					if(*(scn->pCurrent++) == 'g')
 					{
-						if(*(pCurrent++) == '1')
+						if(*(scn->pCurrent++) == '1')
 						{
-							if(*(pCurrent++) == '0')
-								return CreateToken("log10", 5, Token::Function);
-							return CreateToken("", 0, Token::Empty);
+							if(*(scn->pCurrent++) == '0')
+								return CreateToken("log10", 5, TokenFunction);
+							return CreateToken("", 0, TokenEmpty);
 						}
 						else
-							return CreateToken("log", 3, Token::Function);
+							return CreateToken("log", 3, TokenFunction);
 					}
-				return CreateToken("", 0, Token::Empty);
+				return CreateToken("", 0, TokenEmpty);
 			case 't': // may be 'tan' or 'tg'
-				++pCurrent;
-				if(*(pCurrent++) == 'a')
+				++scn->pCurrent;
+				if(*(scn->pCurrent++) == 'a')
 				{
-					if(*(pCurrent++) == 'n')
-						return CreateToken("tan", 3, Token::Function);
+					if(*(scn->pCurrent++) == 'n')
+						return CreateToken("tan", 3, TokenFunction);
 				}
-				else if(*(pCurrent-1) == 'g')
-					return CreateToken("tg", 3, Token::Function);
-				return CreateToken("", 0, Token::Empty);
+				else if(*(scn->pCurrent-1) == 'g')
+					return CreateToken("tg", 3, TokenFunction);
+				return CreateToken("", 0, TokenEmpty);
 		}
-		if(isdigit(*pCurrent)) {
+		if(isdigit(*scn->pCurrent)) {
 			char buffNum[MAX_NUM_LENGTH];
 			unsigned i;
-			for(i = 0; i < MAX_NUM_LENGTH; ++i, ++pCurrent)
+			for(i = 0; i < MAX_NUM_LENGTH; ++i, ++scn->pCurrent)
 			{
-				if(!isdigit(*pCurrent))
+				if(!isdigit(*scn->pCurrent))
 					break;
-				buffNum[i] = *pCurrent;
+				buffNum[i] = *scn->pCurrent;
 			}
-			if(*pCurrent == '.')
+			if(*scn->pCurrent == '.')
 			{
-				buffNum[i] = *pCurrent;
-				++i, ++pCurrent;
+				buffNum[i] = *scn->pCurrent;
+				++i, ++scn->pCurrent;
 			}
-			for(; i < MAX_NUM_LENGTH; ++i, ++pCurrent)
+			for(; i < MAX_NUM_LENGTH; ++i, ++scn->pCurrent)
 			{
-				if(!isdigit(*pCurrent))
+				if(!isdigit(*scn->pCurrent))
 					break;
-				buffNum[i] = *pCurrent;
+				buffNum[i] = *scn->pCurrent;
 			}
-			if(*pCurrent == 'e' || *pCurrent == 'E') // для чисел вида 1.341E+12
+			if(*scn->pCurrent == 'e' || *scn->pCurrent == 'E') // для чисел вида 1.341E+12
 			{
-				buffNum[i] = *pCurrent;
-				++i, ++pCurrent;
-				if(*pCurrent == '+' || *pCurrent == '-')
+				buffNum[i] = *scn->pCurrent;
+				++i, ++scn->pCurrent;
+				if(*scn->pCurrent == '+' || *scn->pCurrent == '-')
 				{
-					buffNum[i] = *pCurrent;
-					++i, ++pCurrent;
+					buffNum[i] = *scn->pCurrent;
+					++i, ++scn->pCurrent;
 				}
 				goto parseAfterDot;
 			}
-			return CreateToken(buffNum, i, Token::Number);
+			return CreateToken(buffNum, i, TokenNumber);
 parseAfterDot:
-			for(; i < MAX_NUM_LENGTH; ++i, ++pCurrent)
+			for(; i < MAX_NUM_LENGTH; ++i, ++scn->pCurrent)
 			{
-				if(!isdigit(*pCurrent))
-					return CreateToken(buffNum, i, Token::Number);
-				buffNum[i] = *pCurrent;
+				if(!isdigit(*scn->pCurrent))
+					return CreateToken(buffNum, i, TokenNumber);
+				buffNum[i] = *scn->pCurrent;
 			}
 		}
-		return CreateToken("", 0, Token::Empty);
+		return CreateToken("", 0, TokenEmpty);
 	}
 }
 
-Node::Node(Node::EType type): type(type) {}
-
-Parser::Parser(const char* expr): Scanner(expr) {
-	root = nullptr;
+Node* CreateNode(ENodeType type) {
+	Node* node;
+	node->type = type;
+	return node;
 }
 
-Parser::~Parser() {
-	DeleteChild(root);
+void CreateParser(Parser* prs, const char* expr) {
+	CreateScanner(prs, expr);
+	prs->root = NULL;
 }
 
-Node* Parser::ParseAdditive() {
-	Node* pLeft = ParseMultiplicative();
-	while(token.type == Token::Addition || token.type == Token::Subtraction)
+void DeleteParser(Parser* prs) {
+	DeleteChild(prs->root);
+}
+
+Node* ParseAdditive(Parser* prs) {
+	Node* pLeft = ParseMultiplicative(prs);
+	while(prs->token.type == TokenAddition || prs->token.type == TokenSubtraction)
 	{
-		Node* pAdditive = new Node(Node::Additive);
-		pAdditive->token.type = token.type;
-		pAdditive->token.value = token.value;
-		token = GetToken();
+		Node* pAdditive = CreateNode(NodeAdditive);
+		pAdditive->token.type = prs->token.type;
+		pAdditive->token.value = prs->token.value;
+		prs->token = GetToken(prs);
 		pAdditive->pLeft = pLeft;
-		Node* pRight = ParseMultiplicative();
+		Node* pRight = ParseMultiplicative(prs);
 		pAdditive->pRight = pRight;
-		nodes.Push(pAdditive);
+		prs->nodes.Push(pAdditive);
 		pLeft = pAdditive;
 	}
 	return pLeft;
 }
 
-Node* Parser::ParseMultiplicative() {
-	Node* pLeft = ParsePower();
-	while(token.type == Token::Multiplication || token.type == Token::Division)
+Node* ParseMultiplicative(Parser* prs) {
+	Node* pLeft = ParsePower(prs);
+	while(prs->token.type == TokenMultiplication || prs->token.type == TokenDivision)
 	{
-		Node* pMultiplicative = new Node(Node::Multiplicative);
-		pMultiplicative->token.type = token.type;
-		pMultiplicative->token.value = token.value;
-		token = GetToken();
+		Node* pMultiplicative = CreateNode(NodeMultiplicative);
+		pMultiplicative->token.type = prs->token.type;
+		pMultiplicative->token.value = prs->token.value;
+		prs->token = GetToken(prs);
 		pMultiplicative->pLeft = pLeft;
-		Node* pRight = ParsePower();
+		Node* pRight = ParsePower(prs);
 		pMultiplicative->pRight = pRight;
-		nodes.Push(pMultiplicative);
+		prs->nodes.Push(pMultiplicative);
 		pLeft = pMultiplicative;
 	}
 	return pLeft;
 }
 
-Node* Parser::ParsePower() {
-	Node* pLeft = ParsePrimary();
-	while(token.type == Token::Power)
+Node* ParsePower(Parser* prs) {
+	Node* pLeft = ParsePrimary(prs);
+	while(prs->token.type == TokenPower)
 	{
-		Node* pPower = new Node(Node::Power);
-		pPower->token.type = token.type;
-		pPower->token.value = token.value;
-		token = GetToken();
+		Node* pPower = CreateNode(NodePower);
+		pPower->token.type = prs->token.type;
+		pPower->token.value = prs->token.value;
+		prs->token = GetToken(prs);
 		pPower->pLeft = pLeft;
-		Node* pRight = ParsePrimary();
+		Node* pRight = ParsePrimary(prs);
 		pPower->pRight = pRight;
-		nodes.Push(pPower);
+		prs->nodes.Push(pPower);
 		pLeft = pPower;
 	}
 	return pLeft;
 }
 
-Node* Parser::ParsePrimary() {
-	if(token.type == Token::Left)
+Node* ParsePrimary(Parser* prs) {
+	if(prs->token.type == TokenLeft)
 	{
-		token = GetToken();
-		Node* pPrim = ParseAdditive();
-		if(token.type != Token::Right)
+		prs->token = GetToken(prs);
+		Node* pPrim = ParseAdditive(prs);
+		if(prs->token.type != TokenRight)
 		{
 			printf("[err]: Parse error: ')' expected\n");
 			assert(false);
 		}
-		token = GetToken();
+		prs->token = GetToken(prs);
 		return pPrim;
 	}
-	if(token.type == Token::Constant || token.type == Token::Number || token.type == Token::Variable)
+	if(prs->token.type == TokenConstant || prs->token.type == TokenNumber || prs->token.type == TokenVariable)
 	{
-		Node* pPrim = new Node(Node::Primary);
-		pPrim->token.value = new char[strlen(token.value)+1];
-		pPrim->token.value = token.value;
-		pPrim->token.type = token.type;
-		pPrim->pLeft = nullptr;
-		pPrim->pRight = nullptr;
-		nodes.Push(pPrim);
-		token = GetToken();
+		Node* pPrim = CreateNode(NodePrimary);
+		pPrim->token.value = malloc((strlen(prs->token.value)+1) * sizeof(char));
+		pPrim->token.value = prs->token.value;
+		pPrim->token.type = prs->token.type;
+		pPrim->pLeft = NULL;
+		pPrim->pRight = NULL;
+		prs->nodes.Push(pPrim);
+		prs->token = GetToken(prs);
 		return pPrim;
 	}
-	if(token.type == Token::Function)
+	if(prs->token.type == TokenFunction)
 	{
-		Node* pPrim = new Node(Node::Unary);
-		pPrim->token.value = new char[strlen(token.value)+1];
-		pPrim->token.value = token.value;
-		pPrim->token.type = token.type;
-		token = GetToken();
-		Node* pLeft = ParsePrimary();
+		Node* pPrim = CreateNode(NodeUnary);
+		pPrim->token.value = malloc((strlen(prs->token.value)+1) * sizeof(char));
+		pPrim->token.value = prs->token.value;
+		pPrim->token.type = prs->token.type;
+		prs->token = GetToken(prs);
+		Node* pLeft = ParsePrimary(prs);
 		pPrim->pLeft = pLeft;
-		pPrim->pRight = nullptr;
-		nodes.Push(pPrim);
+		pPrim->pRight = NULL;
+		prs->nodes.Push(pPrim);
 		return pPrim;
 	}
-	return ParseAdditive();
+	return ParseAdditive(prs);
 }
 
-Node* Parser::Parse() {
-	token = GetToken();
-	root = ParseAdditive();
-	return root;
+Node* Parse(Parser* prs) {
+	prs->token = GetToken(prs);
+	prs->root = ParseAdditive(prs);
+	return prs->root;
 }
 
-void Node::Print(int depth) {
-	if(type == Primary)
+void PrintNode(Node* node, int depth) {
+	if(node->type == NodePrimary)
 	{
-		printf("\n%d: %s -> ", depth, token.value);
+		printf("\n%d: %s -> ", depth, node->token.value);
 	}
-	else if(type == Unary)
+	else if(node->type == NodeUnary)
 	{
-		printf("\n%d: %s", depth, token.value);
+		printf("\n%d: %s", depth, node->token.value);
 		printf("\n%d ->", depth);
-		pLeft->Print(depth+1);
+		PrintNode(node->pLeft, depth+1);
 	}
-	else if(type == Additive || type == Multiplicative || type == Power)
+	else if(node->type == NodeAdditive || node->type == NodeMultiplicative || node->type == NodePower)
 	{
-		printf("\n%d: %s", depth, token.value);
+		printf("\n%d: %s", depth, node->token.value);
 		printf("\n%d left ->", depth);
-		pLeft->Print(depth+1);
+		PrintNode(node->pLeft, depth+1);
 		printf("\n%d right ->", depth);
-		pRight->Print(depth+1);
+		PrintNode(node->pRight, depth+1);
 	}
 	else
 	{
-		printf("[err]: Unknown node: %s\n", token.value);
+		printf("[err]: Unknown node: %s\n", node->token.value);
 		assert(false);
 	}
 }
@@ -314,23 +320,23 @@ void DeleteChild(Node* node) {
 		DeleteChild(node->pLeft);
 	if (node->pRight)
 		DeleteChild(node->pRight);
-	delete node;
+	free(node);
 }
 
 T Calculate(Node* node, T firstVar) {
-	if(node->type == Node::Primary)
+	if(node->type == NodePrimary)
 	{
-		if(node->token.type == Token::Number)
+		if(node->token.type == TokenNumber)
 			return atof(node->token.value);
-		if(node->token.type == Token::Variable)
+		if(node->token.type == TokenVariable)
 			return firstVar;
-		if(node->token.type == Token::Constant)
+		if(node->token.type == TokenConstant)
 		{
 			printf("[err]: Constant not implemented: %s\n", node->token.value);
 			assert(false); // Не реализовано
 		}
 	}
-	else if(node->type == Node::Unary)
+	else if(node->type == NodeUnary)
 	{
 		if(!strcmp(node->token.value, "sin"))
 			return mySin(Calculate(node->pLeft, firstVar));
@@ -361,17 +367,17 @@ T Calculate(Node* node, T firstVar) {
 		printf("[err]: Function not implemented: %s\n", node->token.value);
 		assert(false); // Не реализовано
 	}
-	else if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+	else if(node->type == NodeAdditive || node->type == NodeMultiplicative || node->type == NodePower)
 	{
-		if(node->token.type == Token::Addition)
+		if(node->token.type == TokenAddition)
 			return Calculate(node->pLeft, firstVar) + Calculate(node->pRight, firstVar);
-		if(node->token.type == Token::Subtraction)
+		if(node->token.type == TokenSubtraction)
 			return Calculate(node->pLeft, firstVar) - Calculate(node->pRight, firstVar);
-		if(node->token.type == Token::Multiplication)
+		if(node->token.type == TokenMultiplication)
 			return Calculate(node->pLeft, firstVar) * Calculate(node->pRight, firstVar);
-		if(node->token.type == Token::Division)
+		if(node->token.type == TokenDivision)
 			return Calculate(node->pLeft, firstVar) / Calculate(node->pRight, firstVar);
-		if(node->token.type == Token::Power)
+		if(node->token.type == TokenPower)
 			return myPow(Calculate(node->pLeft, firstVar),  Calculate(node->pRight, firstVar));
 		printf("[err]: Operation not implemented: %s\n", node->token.value);
 		assert(false); // Не реализовано
@@ -393,12 +399,12 @@ void PrintTree(Node* node, T firstVar, int depth) {
 }
 
 void CalculatePrint(Node* node, T firstVar) {
-	if(node->type == Node::Primary)
+	if(node->type == NodePrimary)
 	{
 		printf("%s", node->token.value);
 		return;
 	}
-	if(node->type == Node::Unary)
+	if(node->type == NodeUnary)
 	{
 		printf(" %s", node->token.value);
 		printf("(");
@@ -406,7 +412,7 @@ void CalculatePrint(Node* node, T firstVar) {
 		printf(")");
 		return;
 	}
-	if(node->type == Node::Additive || node->type == Node::Multiplicative || node->type == Node::Power)
+	if(node->type == NodeAdditive || node->type == NodeMultiplicative || node->type == NodePower)
 	{
 		printf("[");
 		CalculatePrint(node->pLeft, firstVar);
