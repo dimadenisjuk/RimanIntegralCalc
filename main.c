@@ -26,7 +26,6 @@ int main(int argc, char* argv[]) {
 	scanf("%s%lf%lf", ob1._func, &ob1._a, &ob1._b);
 	char* strPresition = malloc(100*sizeof(char));
 	scanf("%s", strPresition);
-	printf("dsldfj");
 	long long presition;
 	if(!strcmp(strPresition, "LL"))
 		presition = PRESITION_LL;

@@ -36,19 +36,19 @@ void CreateScanner(Scanner* scn, const char* expr) {
 }
 
 void DeleteScanner(Scanner* scn) {
-	while(!scn->tokens.IsEmpty())
-		scn->tokens.Pop();
+	while(scn->tokens.nCount!=0)
+		PopStack(&scn->tokens);
 }
 
 
-Token CreateToken(const char* ptr, int count, ETokenType type) {
+Token CreateToken(Scanner* scn, const char* ptr, int count, enum ETokenType type) {
 	Token token;
-	InitToken(token);
+	InitToken(&token);
 	token.value = malloc((count+1) * sizeof(char));
 	strncpy(token.value, ptr, count); // копируем count символов из строки ptr
 	token.value[count] = '\0';
 	token.type = type;
-	tokens.Push(token.value);
+	PushStack(&scn->tokens, token.value);
 	return token;
 }
 
@@ -63,49 +63,49 @@ Token GetToken(Scanner* scn) {
 				scn->pCurrent++;
 				continue;
 			case '+':
-				return CreateToken(scn->pCurrent++, 1, TokenAddition);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenAddition);
 			case '-':
-				return CreateToken(scn->pCurrent++, 1, TokenSubtraction);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenSubtraction);
 			case '*':
-				return CreateToken(scn->pCurrent++, 1, TokenMultiplication);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenMultiplication);
 			case '/':
-				return CreateToken(scn->pCurrent++, 1, TokenDivision);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenDivision);
 			case '^':
-				return CreateToken(scn->pCurrent++, 1, TokenPower);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenPower);
 			case '(':
-				return CreateToken(scn->pCurrent++, 1, TokenLeft);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenLeft);
 			case ')':
-				return CreateToken(scn->pCurrent++, 1, TokenRight);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenRight);
 			case 'x':
-				return CreateToken(scn->pCurrent++, 1, TokenVariable);
+				return CreateToken(scn, scn->pCurrent++, 1, TokenVariable);
 			case 'c': // may be 'cos' or 'cot'
 				++scn->pCurrent;
 				if(*(scn->pCurrent++) == 'o')
 				{
 					if(*(scn->pCurrent++) == 's')
-						return CreateToken("cos", 3, TokenFunction);
+						return CreateToken(scn, "cos", 3, TokenFunction);
 					if(*(scn->pCurrent++) == 't')
-						return CreateToken("cot", 3, TokenFunction);
+						return CreateToken(scn, "cot", 3, TokenFunction);
 				}
-				return CreateToken("", 0, TokenEmpty);
+				return CreateToken(scn, "", 0, TokenEmpty);
 			case 'e': // may be 'exp'
 				++scn->pCurrent;
 				if((*scn->pCurrent++) == 'e')
 					if(*(scn->pCurrent++) == 'x')
 						if(*(scn->pCurrent++) == 'p')
-							return CreateToken("exp", 3, TokenFunction);
-				return CreateToken("", 0, TokenEmpty);
+							return CreateToken(scn, "exp", 3, TokenFunction);
+				return CreateToken(scn, "", 0, TokenEmpty);
 			case 'p': // may be 'pi'
 				++scn->pCurrent;
 				if(*(scn->pCurrent++) == 'i')
-					return CreateToken("pi", 2, TokenConstant);
-				return CreateToken("", 0, TokenEmpty);
+					return CreateToken(scn, "pi", 2, TokenConstant);
+				return CreateToken(scn, "", 0, TokenEmpty);
 			case 's': // may be 'sin'
 				++scn->pCurrent;
 				if(*(scn->pCurrent++) == 'i')
 					if(*(scn->pCurrent++) == 'n')
-						return CreateToken("sin", 3, TokenFunction);
-				return CreateToken("", 0, TokenEmpty);
+						return CreateToken(scn, "sin", 3, TokenFunction);
+				return CreateToken(scn, "", 0, TokenEmpty);
 			case 'l': // may be 'log' or 'log10'
 				++scn->pCurrent;
 				if(*(scn->pCurrent++) == 'o')
@@ -114,23 +114,23 @@ Token GetToken(Scanner* scn) {
 						if(*(scn->pCurrent++) == '1')
 						{
 							if(*(scn->pCurrent++) == '0')
-								return CreateToken("log10", 5, TokenFunction);
-							return CreateToken("", 0, TokenEmpty);
+								return CreateToken(scn, "log10", 5, TokenFunction);
+							return CreateToken(scn, "", 0, TokenEmpty);
 						}
 						else
-							return CreateToken("log", 3, TokenFunction);
+							return CreateToken(scn, "log", 3, TokenFunction);
 					}
-				return CreateToken("", 0, TokenEmpty);
+				return CreateToken(scn, "", 0, TokenEmpty);
 			case 't': // may be 'tan' or 'tg'
 				++scn->pCurrent;
 				if(*(scn->pCurrent++) == 'a')
 				{
 					if(*(scn->pCurrent++) == 'n')
-						return CreateToken("tan", 3, TokenFunction);
+						return CreateToken(scn, "tan", 3, TokenFunction);
 				}
 				else if(*(scn->pCurrent-1) == 'g')
-					return CreateToken("tg", 3, TokenFunction);
-				return CreateToken("", 0, TokenEmpty);
+					return CreateToken(scn, "tg", 3, TokenFunction);
+				return CreateToken(scn, "", 0, TokenEmpty);
 		}
 		if(isdigit(*scn->pCurrent)) {
 			char buffNum[MAX_NUM_LENGTH];
@@ -163,20 +163,20 @@ Token GetToken(Scanner* scn) {
 				}
 				goto parseAfterDot;
 			}
-			return CreateToken(buffNum, i, TokenNumber);
+			return CreateToken(scn, buffNum, i, TokenNumber);
 parseAfterDot:
 			for(; i < MAX_NUM_LENGTH; ++i, ++scn->pCurrent)
 			{
 				if(!isdigit(*scn->pCurrent))
-					return CreateToken(buffNum, i, TokenNumber);
+					return CreateToken(scn, buffNum, i, TokenNumber);
 				buffNum[i] = *scn->pCurrent;
 			}
 		}
-		return CreateToken("", 0, TokenEmpty);
+		return CreateToken(scn, "", 0, TokenEmpty);
 	}
 }
 
-Node* CreateNode(ENodeType type) {
+Node* CreateNode(enum ENodeType type) {
 	Node* node;
 	node->type = type;
 	return node;
@@ -202,7 +202,7 @@ Node* ParseAdditive(Parser* prs) {
 		pAdditive->pLeft = pLeft;
 		Node* pRight = ParseMultiplicative(prs);
 		pAdditive->pRight = pRight;
-		prs->nodes.Push(pAdditive);
+		PushStack(&prs->nodes, pAdditive);
 		pLeft = pAdditive;
 	}
 	return pLeft;
@@ -219,7 +219,7 @@ Node* ParseMultiplicative(Parser* prs) {
 		pMultiplicative->pLeft = pLeft;
 		Node* pRight = ParsePower(prs);
 		pMultiplicative->pRight = pRight;
-		prs->nodes.Push(pMultiplicative);
+		PushStack(&prs->nodes, pMultiplicative);
 		pLeft = pMultiplicative;
 	}
 	return pLeft;
@@ -236,7 +236,7 @@ Node* ParsePower(Parser* prs) {
 		pPower->pLeft = pLeft;
 		Node* pRight = ParsePrimary(prs);
 		pPower->pRight = pRight;
-		prs->nodes.Push(pPower);
+		PushStack(&prs->nodes, pPower);
 		pLeft = pPower;
 	}
 	return pLeft;
@@ -263,7 +263,7 @@ Node* ParsePrimary(Parser* prs) {
 		pPrim->token.type = prs->token.type;
 		pPrim->pLeft = NULL;
 		pPrim->pRight = NULL;
-		prs->nodes.Push(pPrim);
+		PushStack(&prs->nodes, pPrim);
 		prs->token = GetToken(prs);
 		return pPrim;
 	}
@@ -277,7 +277,7 @@ Node* ParsePrimary(Parser* prs) {
 		Node* pLeft = ParsePrimary(prs);
 		pPrim->pLeft = pLeft;
 		pPrim->pRight = NULL;
-		prs->nodes.Push(pPrim);
+		PushStack(&prs->nodes, pPrim);
 		return pPrim;
 	}
 	return ParseAdditive(prs);

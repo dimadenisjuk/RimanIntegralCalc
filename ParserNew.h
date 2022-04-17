@@ -9,27 +9,38 @@
 #include <assert.h>
 #include <stdio.h>
 
+enum ETokenType {
+	TokenUnknown, // Для начальной инициализаци
+	TokenDataMin,
+		TokenConstant, // Константа (предустановленная)
+		TokenNumber, // Константа (заданная пользователем)
+		TokenVariable, // Переменная
+	TokenDataMax,
+	TokenOperationMin,
+		TokenAddition,
+		TokenSubtraction,
+		TokenMultiplication,
+		TokenDivision,
+		TokenPower,
+		TokenLeft,
+		TokenRight,
+		TokenFunction,
+	TokenOperationMax,
+	TokenEmpty // Последняя лексема в лексической свёртке
+};
+
+enum ENodeType {
+	NodeExpression,
+	NodeAdditive, // Выражение вида "a (+|-) b"
+	NodeMultiplicative, // Выражение вида "a (*|/) b"
+	NodePower, // Выражение вида "a ^ b"
+	NodeUnary, // Унарное выражение вида "sin a"
+	NodePrimary // Конечное выражение вида "a"
+};
+
 typedef struct {
-	enum ETokenType {
-		TokenUnknown, // Для начальной инициализаци
-		TokenDataMin,
-			TokenConstant, // Константа (предустановленная)
-			TokenNumber, // Константа (заданная пользователем)
-			TokenVariable, // Переменная
-		TokenDataMax,
-		TokenOperationMin,
-			TokenAddition,
-			TokenSubtraction,
-			TokenMultiplication,
-			TokenDivision,
-			TokenPower,
-			TokenLeft,
-			TokenRight,
-			TokenFunction,
-		TokenOperationMax,
-		TokenEmpty // Последняя лексема в лексической свёртке
-	} type;
 	char* value;
+	enum ETokenType type;
 } Token;
 void InitToken(Token* token);
 void PrintToken(Token* token);
@@ -38,33 +49,24 @@ bool TokenIsConstant(Token* token);
 
 typedef struct {
 	const char* pCurrent;
-	//Stack<char*> tokens;
 	Stack tokens;
 
 } Scanner;
 void CreateScanner(Scanner* scn, const char* expr);
 void DeleteScanner(Scanner* scn);
-Token CreateToken(Scanner* scn, const char* ptr, int count, ETokenType type); // %.*s, count, ptr
+Token CreateToken(Scanner* scn, const char* ptr, int count, enum ETokenType type); // %.*s, count, ptr
 Token GetToken(Scanner* scn);
 
 typedef struct {
-	enum ENodeType {
-		NodeExpression,
-		NodeAdditive, // Выражение вида "a (+|-) b"
-		NodeMultiplicative, // Выражение вида "a (*|/) b"
-		NodePower, // Выражение вида "a ^ b"
-		NodeUnary, // Унарное выражение вида "sin a"
-		NodePrimary // Конечное выражение вида "a"
-	} type;
-	Node *pLeft, *pRight; // Дочерние узлы
+	void *pLeft, *pRight; // Дочерние узлы
 	Token token; // Операция над ними
+	enum ENodeType type;
 } Node;
-Node* CreateNode(Node* node, ENodeType type);
+Node* CreateNode(enum ENodeType type);
 void PrintNode(Node* node, int depth);
 
 typedef struct {
-	//Stack <Node*> nodes;
-	Stack tokens;
+	Stack nodes;
 	Token token;
 	Node* root;
 } Parser;

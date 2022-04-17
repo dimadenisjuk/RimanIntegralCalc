@@ -1,65 +1,28 @@
 #ifndef STACK_H
 #define STACK_H
-#pragma once
+
 #include <assert.h>
 #include <stdlib.h>
+#include "Definitions.h"
 
-template <typename T1_s>
-class Stack {
-	struct Entry {//Структура элементов
-		T1_s value; //Значение,помещаемое в стек
-		Entry* pPrev;//Указатель на следующий элемент
-	};
-	Entry* pTop;//Указатель на верх стека
+typedef void* S_T;
+
+typedef struct {//Структура элементов
+	S_T value; //Значение,помещаемое в стек
+	void* pPrev;//Указатель на следующий элемент
+} Entry;
+
+typedef struct {
+	Entry* pTop;//Указатель на хвост и голову стека
 	unsigned nCount;//Cчетчик числа элементов стека
-public:
-	Stack(){
-		pTop = nullptr;//Указатель на хвост и голову стека
-		nCount = 0;
-	}
+} Stack;
 
-	~Stack() {
-		while (nCount)
-			Pop();
-	}
+void CreateStack(Stack* pSt);
 
-	// Метод вталкивания значения в стек
-	bool Push(T1_s value) {
-		//Создание нового элемента в памяти
-		Entry* pe = (Entry*)calloc(sizeof(Entry), 1);
-		if (!pe)
-			return false;
-		//Инициализация нового элемента
-		pe-> value = value;
-		pe-> pPrev = nullptr;
-		//Добавление нового элемента в стек
-		pe-> pPrev = pTop;	
-		pTop = pe;
-		nCount++;
-		return true;
-	}
+void DeleteStack(Stack* pSt);
 
-	//Метод выталкивания значения из стек
-	T1_s Pop() {
-		assert(nCount);
+bool PushStack(Stack* pSt, S_T value);
 
-		//Временно сохраняем значение из головного элемента
-		Entry* pe = pTop;
-		T1_s value = pe->value;
-
-		//Исключаем головной элемент из стека
-		pTop = pe->pPrev;
-		nCount--;
-		//Удаление головного элемента
-		free(pe);
-
-		return(value);
-	}
-
-	inline bool IsEmpty() {
-		return !nCount;
-	}
-};
+S_T PopStack(Stack* pSt);
 
 #endif //STACK_H
-
