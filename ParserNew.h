@@ -50,8 +50,8 @@ bool TokenIsConstant(Token* token);
 typedef struct {
 	const char* pCurrent;
 	Stack tokens;
-
 } Scanner;
+
 void CreateScanner(Scanner* scn, const char* expr);
 void DeleteScanner(Scanner* scn);
 Token CreateToken(Scanner* scn, const char* ptr, int count, enum ETokenType type); // %.*s, count, ptr
@@ -62,14 +62,18 @@ typedef struct {
 	Token token; // Операция над ними
 	enum ENodeType type;
 } Node;
+
 Node* CreateNode(enum ENodeType type);
 void PrintNode(Node* node, int depth);
 
-typedef struct {
+typedef struct { // "Наследуется" от Scanner
+	const char* pCurrent;
+	Stack tokens;
 	Stack nodes;
 	Token token;
 	Node* root;
 } Parser;
+
 Node* ParseAdditive(Parser* prs);
 Node* ParseMultiplicative(Parser* prs);
 Node* ParsePower(Parser* prs);

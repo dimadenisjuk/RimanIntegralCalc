@@ -33,6 +33,7 @@ bool TokenIsConstant(Token* token) {
 
 void CreateScanner(Scanner* scn, const char* expr) {
 	scn->pCurrent = expr;
+	CreateStack(&scn->tokens);
 }
 
 void DeleteScanner(Scanner* scn) {
@@ -177,7 +178,7 @@ parseAfterDot:
 }
 
 Node* CreateNode(enum ENodeType type) {
-	Node* node;
+	Node* node = malloc(sizeof(Node));
 	node->type = type;
 	return node;
 }
@@ -185,10 +186,12 @@ Node* CreateNode(enum ENodeType type) {
 void CreateParser(Parser* prs, const char* expr) {
 	CreateScanner(prs, expr);
 	prs->root = NULL;
+	CreateStack(&prs->nodes);
 }
 
 void DeleteParser(Parser* prs) {
 	DeleteChild(prs->root);
+	DeleteScanner(prs);
 }
 
 Node* ParseAdditive(Parser* prs) {

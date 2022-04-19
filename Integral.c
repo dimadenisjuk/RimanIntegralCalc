@@ -182,6 +182,7 @@ T IntegResultNew(Integ* integ, int* progress, long long presition) {
 	write(outFile, fileBuffer, strlen(fileBuffer));
 	close(outFile);
 	free(fileBuffer);
+	DeleteParser(&prs);
 	return Square;
 }
 
