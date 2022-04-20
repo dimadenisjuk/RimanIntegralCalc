@@ -61,6 +61,7 @@ public:
 	Node *pLeft, *pRight; // Дочерние узлы
 	Token token; // Операция над ними
 	Node(EType type);
+	Node(EType type, Node* pLeft, Node* pRight, char* tokenValue);
 	void Print(int depth = 0);
 };
 
@@ -71,6 +72,7 @@ class Parser : Scanner {
 	Node* ParseMultiplicative();
 	Node* ParsePower();
 	Node* ParsePrimary();
+	Node* CreateNode(Node::EType, Node* pLeft, Node* pRight, char* tokenValue);
 	public:
 	Parser(const char* source);
 	Node* Parse();
