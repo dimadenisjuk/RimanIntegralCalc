@@ -119,7 +119,10 @@ Token GetToken(Scanner* scn) {
 							return CreateToken(scn, "", 0, TokenEmpty);
 						}
 						else
+						{
+							--pCurrent;
 							return CreateToken(scn, "log", 3, TokenFunction);
+						}
 					}
 				return CreateToken(scn, "", 0, TokenEmpty);
 			case 't': // may be 'tan' or 'tg'
