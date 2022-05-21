@@ -117,7 +117,10 @@ Token Scanner::GetToken() {
 							return CreateToken("", 0, Token::Empty);
 						}
 						else
+						{
+							--pCurrent;
 							return CreateToken("log", 3, Token::Function);
+						}
 					}
 				return CreateToken("", 0, Token::Empty);
 			case 't': // may be 'tan' or 'tg'
